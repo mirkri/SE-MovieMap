@@ -1,4 +1,4 @@
-package com.???.server;
+package com.server;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import com.???.client.GreetingService;
+import com.client.GreetingService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**

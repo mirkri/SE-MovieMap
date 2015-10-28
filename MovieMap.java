@@ -1,7 +1,7 @@
-package com.;
+package com.client;
 
-import com.???.client.GreetingService;
-import com.???.client.GreetingServiceAsync;
+import com.client.GreetingService;
+import com.client.GreetingServiceAsync;
 
 import java.util.ArrayList;
 import com.google.gwt.core.client.EntryPoint;

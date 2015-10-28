@@ -15,7 +15,6 @@
     <servlet-name>greetServlet</servlet-name>
     <url-pattern>/moviemap/greet</url-pattern>
   </servlet-mapping>
-  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>MovieMap.html</welcome-file>

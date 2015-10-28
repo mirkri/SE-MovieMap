@@ -1,4 +1,4 @@
-package com.;
+package com.client;
 
 import java.util.ArrayList;
 import com.google.gwt.user.client.rpc.RemoteService;
