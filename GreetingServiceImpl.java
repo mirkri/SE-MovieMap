@@ -118,8 +118,8 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
     }
 	
 	public ArrayList<String> getTableData() {
-        String tableName = "moviestest";
-		return executeQuery("SELECT * FROM " + tableName);
+        String tableName = "movies1";
+		return executeQuery("SELECT name, length, language, origin FROM " + tableName + " WHERE year=2000");
 	}
 
 }
