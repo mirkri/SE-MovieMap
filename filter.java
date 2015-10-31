@@ -1,6 +1,6 @@
 package com.client;
 
-public class filter {
+public class Filter {
 	private String name;
 	private String language;
 	private String country;
@@ -50,5 +50,14 @@ public class filter {
 	public void setLength(int length) {
 		this.length = length;
 	}
-	
+	// Unified setter for all filter variables
+	public void filter(String name, String language, String country, String[] genre, int yearStart, int yearEnd, int length){
+		this.name=name;
+		this.language=language;
+		this.country=country;
+		this.genre=genre;
+		this.yearStart=yearStart;
+		this.yearEnd=yearEnd;
+		this.length=length;
+	}
 }
