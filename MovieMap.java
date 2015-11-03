@@ -68,6 +68,7 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         
         //Add a new list for Language selection
         ListBox languageSelection = new ListBox();
+        languageSelection.addItem("Choose Language");
         languageSelection.addItem("English");
         languageSelection.addItem("German");
         //Set itemcount to 1 to make it a dropdown instead of showing all items
@@ -75,10 +76,11 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         
         //Add a new list for Country selection
         ListBox countrySelection = new ListBox();
+        countrySelection.addItem("Choose Country");
         countrySelection.addItem("GB");
         countrySelection.addItem("Germany");
         //Set itemcount to 1 to make it a dropdown instead of showing all items
-        courtrySelection.setVisibleItemCount(1);
+        countrySelection.setVisibleItemCount(1);
         
         // Add listboxes to the root panel.
         VerticalPanel panel = new VerticalPanel();
