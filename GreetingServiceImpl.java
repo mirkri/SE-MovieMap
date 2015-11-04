@@ -1,5 +1,7 @@
 package com.server;
 
+import com.client.GreetingService;
+import com.client.Filter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -8,9 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import com.client.GreetingService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.test.client.Abfrage;
 
 /**
  * The server-side implementation of the RPC service.
@@ -131,12 +131,12 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
         	if("".equalsIgnoreCase(filter.getName())) {
         		boolean hadPrevious = false;
 			    //Language filter
-			    if(filter.getLanguage() != 0) {
+			    if(filter.getLanguage() != null) {
 			    	where = where + " genre LIKE '%" + filter.getLanguage() + "%'";
 			    	hadPrevious = true;
 			    }
 			    //Genre filter
-			    if(filter.getGenre() != 0) {
+			    if(filter.getGenre() != null) {
 			    	if(hadPrevious) {
 			    		where = where + " AND genre LIKE '%" + filter.getGenre() + "%'";
 			    	} else {
@@ -167,7 +167,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 			    	}	
 			    }
 			    //Origin filter
-			    if(filter.getCountry() != 0) {
+			    if(filter.getCountry() != null) {
 			    	if(hadPrevious) {
 			    		where = where + " AND origin LIKE '%" + filter.getCountry() + "%'";
 			    	} else {

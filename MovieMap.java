@@ -31,6 +31,10 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	private FlexTable dataTable = new FlexTable();
 	private HorizontalPanel addPanel = new HorizontalPanel();
 	private Button query = new Button("executeQuery");
+	private ListBox languageSelection = new ListBox();
+	private ListBox countrySelection = new ListBox();
+	private VerticalPanel FilterPanel = new VerticalPanel();
+	private Filter filter = new Filter();
 
 
 	/**
@@ -67,7 +71,6 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		});
         
         //Add a new list for Language selection
-        ListBox languageSelection = new ListBox();
         languageSelection.addItem("Choose Language");
         languageSelection.addItem("English");
         languageSelection.addItem("German");
@@ -75,7 +78,6 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         languageSelection.setVisibleItemCount(1);
         
         //Add a new list for Country selection
-        ListBox countrySelection = new ListBox();
         countrySelection.addItem("Choose Country");
         countrySelection.addItem("GB");
         countrySelection.addItem("Germany");
@@ -83,19 +85,19 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         countrySelection.setVisibleItemCount(1);
         
         // Add listboxes to the root panel.
-        VerticalPanel panel = new VerticalPanel();
-        panel.setSpacing(10);
-        panel.add(languageSelection);
-        panel.add(countrySelection);
+        
+        FilterPanel.setSpacing(10);
+        FilterPanel.add(languageSelection);
+        FilterPanel.add(countrySelection);
 
-        RootPanel.get("languageDropdown").add(panel);
-        RootPanel.get("countryDropdown").add(panel);
+        RootPanel.get("languageDropdown").add(FilterPanel);
+        RootPanel.get("countryDropdown").add(FilterPanel);
         
         
 	}
 	
 	private void clicked() {
-		greetingService.getTableData(new AsyncCallback<ArrayList <String>>()
+		greetingService.getTableData(filter, new AsyncCallback<ArrayList <String>>()
 		{
 				public void onFailure(Throwable caught)	
 				{
