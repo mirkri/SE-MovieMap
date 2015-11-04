@@ -96,7 +96,7 @@ public class MovieMap implements EntryPoint {
 	private void fillTable(ArrayList<String> data) {
 		if (!(data != null))
 			return;
-		final int columnsCount = Integer.parseInt(data.get(0));
+		int columnsCount = Integer.parseInt(data.get(0));
 		int entry = 1;
 		for (int i = 0; i < ((data.size() - 1) / columnsCount); i++) {
 			for (int c = 0; c < columnsCount; c++) {
