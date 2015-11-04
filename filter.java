@@ -1,6 +1,9 @@
 package com.client;
 
-public class Filter {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class Filter implements IsSerializable {
+	
 	private String name;
 	private String language;
 	private String country;
@@ -8,6 +11,12 @@ public class Filter {
 	private int yearStart;
 	private int yearEnd;
 	private int length; // Codes für Längen (1=(0 bis 60), 2=(61bis120), 3=(121bis)
+	//true falls Daten für die Map abgefragt werden 
+	private boolean isVisual = true;
+	
+	
+	
+	
 	public String getName() {
 		return name;
 	}
@@ -59,5 +68,13 @@ public class Filter {
 		this.yearStart=yearStart;
 		this.yearEnd=yearEnd;
 		this.length=length;
+	}
+	
+	public void setIsVisual(boolean isVisual) {
+		this.isVisual = isVisual;
+	}
+	
+	public boolean isVisual() {
+		return isVisual;
 	}
 }
