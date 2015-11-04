@@ -17,9 +17,6 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  */
 @SuppressWarnings("serial")
 public class GreetingServiceImpl extends RemoteServiceServlet implements GreetingService {
-	
-    private ArrayList <String> executeQuery(String query) {
-    ArrayList <String> queryResult = new ArrayList <String> ();
 
     Connection connection = null;
     ResultSet resultSet = null;
@@ -196,5 +193,4 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 		return executeQuery(finalQuery);
 	}
 	
-
 }
