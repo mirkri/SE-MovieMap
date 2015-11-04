@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.ListBox;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -64,6 +65,33 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 				clicked();
 			}
 		});
+        
+        //Add a new list for Language selection
+        ListBox languageSelection = new ListBox();
+        languageSelection.addItem("Choose Language");
+        languageSelection.addItem("English");
+        languageSelection.addItem("German");
+        //Set itemcount to 1 to make it a dropdown instead of showing all items
+        languageSelection.setVisibleItemCount(1);
+        
+        //Add a new list for Country selection
+        ListBox countrySelection = new ListBox();
+        countrySelection.addItem("Choose Country");
+        countrySelection.addItem("GB");
+        countrySelection.addItem("Germany");
+        //Set itemcount to 1 to make it a dropdown instead of showing all items
+        countrySelection.setVisibleItemCount(1);
+        
+        // Add listboxes to the root panel.
+        VerticalPanel panel = new VerticalPanel();
+        panel.setSpacing(10);
+        panel.add(languageSelection);
+        panel.add(countrySelection);
+
+        RootPanel.get("languageDropdown").add(panel);
+        RootPanel.get("countryDropdown").add(panel);
+        
+        
 	}
 	
 	private void clicked() {
