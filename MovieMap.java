@@ -34,20 +34,15 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	
 	private ListBox languageSelection = new ListBox();
 	private ListBox countrySelection = new ListBox();
-	private VerticalPanel FilterPanel = new VerticalPanel();
 	private Filter filter = new Filter();
-	private VerticalPanel mainPanel = new VerticalPanel();
-	private FlexTable dataTable = new FlexTable();
-	private HorizontalPanel addPanel = new HorizontalPanel();
 	
 	private Label m_rangeSliderLabel;
 	private RangeSlider m_rangeSlider;
-	
-	private int yearStart;
 	private int yearEnd;
+	private int yearStart;
 	
 	
-	private Button query = new Button("Search");
+	private Button goButton = new Button("Search");
 
 	// Constructor. Creates new Instance of Flextable
 	// Flextable automatically resizes on demand - there is no explicit size
@@ -55,7 +50,7 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	// Constructors. Creates new Instances of Panels
 	// HorizontalPanel grows to the right if items are added
 	// VerticalPanel grows downwards if items are added
-	private final HorizontalPanel addPanel = new HorizontalPanel();
+	private final HorizontalPanel filterPanel = new HorizontalPanel();
 	private final VerticalPanel mainPanel = new VerticalPanel();
 
 	/**
@@ -94,13 +89,17 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         mainPanel.add(m_rangeSliderLabel);
         mainPanel.add(m_rangeSlider);
         
-        //Add button to horizontalpanel
-      	addPanel.add(query);
-      		
-      	//Add buttonpanel to mainPanel
-      	mainPanel.add(addPanel);
+        //Add dropdowns FilterPanel
+      	filterPanel.setSpacing(10);
+        filterPanel.add(languageSelection);
+        filterPanel.add(countrySelection);
         
-        
+        //Add button to FilterPanel
+      	filterPanel.add(goButton);
+
+        //Add filterPanel to mainPanel
+        mainPanel.add(filterPanel);
+      	
         //Add dataTable to mainPanel
         mainPanel.add(dataTable);
         
@@ -111,10 +110,11 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		
 		
         //Handle click on button
-		query.addClickHandler(new ClickHandler()
+		goButton.addClickHandler(new ClickHandler()
 		{
 			public void onClick(ClickEvent event)
 			{
+				setFilter();
 				clicked();
 			}
 		});
@@ -123,26 +123,47 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         languageSelection.addItem("Choose Language");
         languageSelection.addItem("English");
         languageSelection.addItem("German");
+        languageSelection.addItem("Hindi");
+        languageSelection.addItem("French");
+        languageSelection.addItem("Italian");
         //Set itemcount to 1 to make it a dropdown instead of showing all items
         languageSelection.setVisibleItemCount(1);
         
         //Add a new list for Country selection
         countrySelection.addItem("Choose Country");
-        countrySelection.addItem("GB");
+        countrySelection.addItem("United Kingdom");
+        countrySelection.addItem("United States of America");
+        countrySelection.addItem("India");
+        countrySelection.addItem("France");
+        countrySelection.addItem("Italy");
         countrySelection.addItem("Germany");
         //Set itemcount to 1 to make it a dropdown instead of showing all items
         countrySelection.setVisibleItemCount(1);
         
-        // Add listboxes to the root panel.
         
-        FilterPanel.setSpacing(10);
-        FilterPanel.add(languageSelection);
-        FilterPanel.add(countrySelection);
-
-        RootPanel.get("languageDropdown").add(FilterPanel);
-        RootPanel.get("countryDropdown").add(FilterPanel);
-        
-        
+	}
+	
+	private void setFilter() {
+		//set Language
+		if(!languageSelection.isItemSelected(0)) {
+			filter.setLanguage(languageSelection.getItemText(languageSelection.getSelectedIndex()));
+		} else {
+			filter.setLanguage(null);
+		}
+		//set Country
+		if(!countrySelection.isItemSelected(0)) {
+			filter.setCountry(countrySelection.getItemText(countrySelection.getSelectedIndex()));
+		} else {
+			filter.setCountry(null);
+		}
+		//set year through timeline
+		filter.setYearStart(yearStart);
+		filter.setYearEnd(yearEnd);
+		//TODO setLength, setName, setGenre
+		filter.setLength(0);
+		filter.setName(null);
+		filter.setGenre(null);
+		//Window.alert(filter.getLanguage() + "\n" + filter.getCountry() + "\n" + filter.getYearStart() + "\t" + filter.getYearEnd()); //Testing set Filter through message
 	}
 
 	private void clicked() {
@@ -154,7 +175,6 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 				}
 				public void onSuccess(ArrayList <String> result)
 				{
-					Window.alert("success");
 					dataTable.removeAllRows();
 					fillTable(result);
 				}

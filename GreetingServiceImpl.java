@@ -17,6 +17,9 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  */
 @SuppressWarnings("serial")
 public class GreetingServiceImpl extends RemoteServiceServlet implements GreetingService {
+	
+    private ArrayList <String> executeQuery(String query) {
+    ArrayList <String> queryResult = new ArrayList <String> ();
 
     Connection connection = null;
     ResultSet resultSet = null;
@@ -125,11 +128,11 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
         if(filter.isVisual()) {
         	
         } else {
-        	if("".equalsIgnoreCase(filter.getName())) {
+        	if(filter.getName() == null) {
         		boolean hadPrevious = false;
 			    //Language filter
 			    if(filter.getLanguage() != null) {
-			    	where = where + " genre LIKE '%" + filter.getLanguage() + "%'";
+			    	where = where + " language LIKE '%" + filter.getLanguage() + "%'";
 			    	hadPrevious = true;
 			    }
 			    //Genre filter
@@ -174,17 +177,17 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 			    }
 			    //Year filter
 			    if(hadPrevious) {
-			    	where = where + " AND (year < " + (filter.getYearEnd() + 1) + " AND year > " + (filter.getYearStart() + 1) + ")";
+			    	where = where + " AND (year < " + (filter.getYearEnd() + 1) + " AND year > " + (filter.getYearStart() - 1) + ")";
 			    } else {
-			    	where = where + " (year < " + (filter.getYearEnd() + 1) + " AND year > " + (filter.getYearStart() + 1) + ")";
+			    	where = where + " (year < " + (filter.getYearEnd() + 1) + " AND year > " + (filter.getYearStart() - 1) + ")";
 			    	hadPrevious = true;
 			    }
 			    
 			    
 			    //define final query
-			    finalQuery = selectAllFromTable + " " + where;
+			    finalQuery = selectAllFromTable + " " + where + ";";
         	} else {
-        		where = where + " name LIKE '%" + filter.getName() + "%'";
+        		where = where + " name LIKE '%" + filter.getName() + "%';";
         		//define final query
 			    finalQuery = selectAllFromTable + " " + where;
         	}
@@ -193,4 +196,5 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 		return executeQuery(finalQuery);
 	}
 	
+
 }

@@ -18,8 +18,6 @@ package com.client;
 import com.google.gwt.json.client.JSONBoolean;
 import com.google.gwt.json.client.JSONObject;
 
-
-
 /**
  * This is a convenient sub class of Slider just for ranges
  */

@@ -12,7 +12,8 @@ public class Filter implements IsSerializable {
 	private int yearEnd;
 	private int length; // Codes für Längen (1=(0 bis 60), 2=(61bis120), 3=(121bis)
 	//true falls Daten für die Map abgefragt werden 
-	private boolean isVisual = true;
+	private boolean isVisual = false;
+	//TODO in Abhängigkeit von Switch Button/ default zum späteren Zeitpunkt sollte true sein
 	
 	
 	
