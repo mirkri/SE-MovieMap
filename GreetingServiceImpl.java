@@ -2,6 +2,7 @@ package com.server;
 
 import com.client.GreetingService;
 import com.client.Filter;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -10,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import com.google.appengine.api.rdbms.AppEngineDriver;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -28,18 +30,16 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 				
         try
         {
-            Class.forName("com.mysql.jdbc.Driver");
-            //Class.forName("com.mysql.jdbc.GoogleDriver");
+            DriverManager.registerDriver(new AppEngineDriver());
         }
-        catch (ClassNotFoundException e)
+        catch (SQLException e)
         {
             // TODO Auto-generated catch block
         }
 				
         try
-        {
-            //connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test2?user=root");
-            connection = DriverManager.getConnection("jdbc:mysql://62.203.130.55:8088/moviemaptest", "SEUser", "SE2015DB");
+        { 
+        	connection = DriverManager.getConnection("jdbc:google:rdbms://moviemapgroup01:movies/moviedb?user=root");
         }
         catch (SQLException e)
         {
@@ -72,7 +72,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
         
         try
         {
-            rsmd = resultSet.getMetaData();
+        	rsmd = resultSet.getMetaData();
         }
         catch (SQLException e)
         {
@@ -86,6 +86,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
         catch (SQLException e)
         {
             // TODO Auto-generated catch block
+        	e.printStackTrace();
         }
         
         try
@@ -119,8 +120,9 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
     }
 	
 	public ArrayList<String> getTableData(Filter filter) {
+		
 		String finalQuery = "";
-        String selectAllFromTable = "SELECT * FROM movies1";
+        String selectAllFromTable = "SELECT * FROM movies";
         String where = "WHERE";
         
         //Define the where statement
@@ -185,7 +187,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 			    
 			    
 			    //define final query
-			    finalQuery = selectAllFromTable + " " + where + ";";
+			    finalQuery = selectAllFromTable + " " + where;
         	} else {
         		where = where + " name LIKE '%" + filter.getName() + "%';";
         		//define final query
