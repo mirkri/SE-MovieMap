@@ -8,6 +8,7 @@ h1 {
   color: #777777;
   margin: 100px 50px 150px;
   text-align: center;
+  clear: both
 }
 
 .sendButton {
@@ -40,5 +41,6 @@ h1 {
 
 /** DataTable**/
 .Table {
-	margin: 2em 2em
+	clear: both;
+	margin: 2em 2em;
 }
