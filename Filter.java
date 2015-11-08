@@ -7,7 +7,7 @@ public class Filter implements IsSerializable {
 	private String name;
 	private String language;
 	private String country;
-	private String[] genre;
+	private String genre;
 	private int yearStart;
 	private int yearEnd;
 	private int length; // Codes für Längen (1=(0 bis 60), 2=(61bis120), 3=(121bis)
@@ -36,10 +36,10 @@ public class Filter implements IsSerializable {
 	public void setCountry(String country) {
 		this.country = country;
 	}
-	public String[] getGenre() {
+	public String getGenre() {
 		return genre;
 	}
-	public void setGenre(String[] genre) {
+	public void setGenre(String genre) {
 		this.genre = genre;
 	}
 	public int getYearStart() {
@@ -61,7 +61,7 @@ public class Filter implements IsSerializable {
 		this.length = length;
 	}
 	// Unified setter for all filter variables
-	public void filter(String name, String language, String country, String[] genre, int yearStart, int yearEnd, int length){
+	public void filter(String name, String language, String country, String genre, int yearStart, int yearEnd, int length){
 		this.name=name;
 		this.language=language;
 		this.country=country;

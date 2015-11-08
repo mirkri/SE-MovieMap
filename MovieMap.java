@@ -34,6 +34,7 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	
 	private ListBox languageSelection = new ListBox();
 	private ListBox countrySelection = new ListBox();
+	private ListBox genreSelection = new ListBox();
 	private Filter filter = new Filter();
 	
 	private Label m_rangeSliderLabel;
@@ -93,6 +94,7 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
       	filterPanel.setSpacing(10);
         filterPanel.add(languageSelection);
         filterPanel.add(countrySelection);
+        filterPanel.add(genreSelection);
         
         //Add button to FilterPanel
       	filterPanel.add(goButton);
@@ -140,6 +142,17 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         //Set itemcount to 1 to make it a dropdown instead of showing all items
         countrySelection.setVisibleItemCount(1);
         
+      //Add a new list for Country selection
+        genreSelection.addItem("Choose Genre");
+        genreSelection.addItem("Comedy");
+        genreSelection.addItem("Drama");
+        genreSelection.addItem("Documentary");
+        genreSelection.addItem("Action");
+        genreSelection.addItem("Silent film");
+        genreSelection.addItem("Romance");
+        //Set itemcount to 1 to make it a dropdown instead of showing all items
+        genreSelection.setVisibleItemCount(1);
+        
         
 	}
 	
@@ -156,13 +169,17 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		} else {
 			filter.setCountry(null);
 		}
+		if(!genreSelection.isItemSelected(0)) {
+			filter.setGenre(genreSelection.getItemText(genreSelection.getSelectedIndex()));
+		} else {
+			filter.setGenre(null);
+		}
 		//set year through timeline
 		filter.setYearStart(yearStart);
 		filter.setYearEnd(yearEnd);
-		//TODO setLength, setName, setGenre
+		//TODO setLength, setName
 		filter.setLength(0);
 		filter.setName(null);
-		filter.setGenre(null);
 		//Window.alert(filter.getLanguage() + "\n" + filter.getCountry() + "\n" + filter.getYearStart() + "\t" + filter.getYearEnd()); //Testing set Filter through message
 	}
 
