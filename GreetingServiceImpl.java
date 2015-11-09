@@ -118,82 +118,8 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
         return queryResult;
     }
 	
-	public ArrayList<String> getTableData(Filter filter) {
-		String finalQuery = "";
-        String selectAllFromTable = "SELECT * FROM movies1";
-        String where = "WHERE";
-        
-        //Define the where statement
-        //Visual Data or not?
-        if(filter.isVisual()) {
-        	
-        } else {
-        	if(filter.getName() == null) {
-        		boolean hadPrevious = false;
-			    //Language filter
-			    if(filter.getLanguage() != null) {
-			    	where = where + " language LIKE '%" + filter.getLanguage() + "%'";
-			    	hadPrevious = true;
-			    }
-			    //Genre filter
-			    if(filter.getGenre() != null) {
-			    	if(hadPrevious) {
-			    		where = where + " AND genre LIKE '%" + filter.getGenre() + "%'";
-			    	} else {
-			    		where = where + " genre LIKE '%" + filter.getGenre() + "%'";
-			    		hadPrevious = true;
-			    	}
-			    }
-			    //Length filter
-			    int lengthCode = filter.getLength();
-			    if(lengthCode != 0) {
-			    	if(hadPrevious) {
-				    	if(lengthCode == 1) {
-				    		where = where + " AND (length < 60 AND length > 0)";
-				    	}else if(lengthCode == 2) {
-				    		where = where + " AND (length < 120 AND length > 59)";
-				    	}else {
-				    		where = where + " AND length > 119";
-				    	}
-			    	} else {
-			    		if(lengthCode == 1) {
-				    		where = where + " (length < 60 AND length > 0)";
-				    	}else if(lengthCode == 2) {
-				    		where = where + " (length < 120 AND length > 59)";
-				    	}else {
-				    		where = where + " length > 119";
-				    	}
-			    		hadPrevious = true;
-			    	}	
-			    }
-			    //Origin filter
-			    if(filter.getCountry() != null) {
-			    	if(hadPrevious) {
-			    		where = where + " AND origin LIKE '%" + filter.getCountry() + "%'";
-			    	} else {
-			    		where = where + " origin LIKE '%" + filter.getCountry() + "%'";
-			    		hadPrevious = true;
-			    		}
-			    }
-			    //Year filter
-			    if(hadPrevious) {
-			    	where = where + " AND (year < " + (filter.getYearEnd() + 1) + " AND year > " + (filter.getYearStart() - 1) + ")";
-			    } else {
-			    	where = where + " (year < " + (filter.getYearEnd() + 1) + " AND year > " + (filter.getYearStart() - 1) + ")";
-			    	hadPrevious = true;
-			    }
-			    
-			    
-			    //define final query
-			    finalQuery = selectAllFromTable + " " + where + ";";
-        	} else {
-        		where = where + " name LIKE '%" + filter.getName() + "%';";
-        		//define final query
-			    finalQuery = selectAllFromTable + " " + where;
-        	}
-        }
-        
-		return executeQuery(finalQuery);
+	public ArrayList<String> getTableData(String query) {
+		return executeQuery(query);
 	}
 	
 
