@@ -117,7 +117,7 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 			public void onClick(ClickEvent event)
 			{
 				setFilter();
-				clicked();
+				queryDatabase();
 			}
 		});
         
@@ -183,8 +183,8 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		//Window.alert(filter.getLanguage() + "\n" + filter.getCountry() + "\n" + filter.getYearStart() + "\t" + filter.getYearEnd()); //Testing set Filter through message
 	}
 
-	private void clicked() {
-		greetingService.getTableData(filter, new AsyncCallback<ArrayList <String>>()
+	private void queryDatabase() {
+		greetingService.getTableData(filter.generateQuery(), new AsyncCallback<ArrayList <String>>()
 		{
 				public void onFailure(Throwable caught)	
 				{

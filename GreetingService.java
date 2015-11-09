@@ -9,5 +9,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("greet")
 public interface GreetingService extends RemoteService {
-	ArrayList<String> getTableData(Filter filter);
+	ArrayList<String> getTableData(String query);
 }
