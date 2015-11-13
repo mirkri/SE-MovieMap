@@ -44,3 +44,11 @@ h1 {
 	clear: both;
 	margin: 2em 2em;
 }
+
+/** CreativeCommons**/
+.cc {
+	float: right;
+	width: 300px;
+    border: 2px solid #ff0000;
+    overflow: auto;
+}
