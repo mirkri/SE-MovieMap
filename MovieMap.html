@@ -49,7 +49,31 @@
 	<div style="float:left;"><h1>MovieMap</h1></div>
 	<img style="float:right; width: 400px; height: 200px;" src="/banner.gif" />
 
-	<div id="root123" style="float: center" class="Table"></div>
+<div>
+        <button id= "Showtable-button"   style="float:left" class="Showtable-button" >
+            Show Table</button>
+        <button id= "Showmap-button" style="float:left"   class="Showmap-button" >
+            Show Map</button>       
+</div>
+
+<script>
+  $(".Showtable-button").click(function () {
+    $("div.Table").show("slow");
+    $("div.Map").hide("slow");
+    
+});
+
+$(".Showmap-button").click(function () {
+    $("div.Map").show("slow");
+    $("div.Table").hide("slow");
+    
+});
+</script>
+
+<div id="root123" style="float: center;display: initial" class="Table"></div>
+<div id="rootMap" style="display: none" class="Map">
+<img style="float:initial; width: 800px; height: 400px;" src="/banner.gif" />	
+</div>    
     
     
   </body>
