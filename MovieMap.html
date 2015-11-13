@@ -49,8 +49,37 @@
 	<div style="float:left;"><h1>MovieMap</h1></div>
 	<img style="float:right; width: 400px; height: 200px;" src="/banner.gif" />
 
-	<div id="root123" style="float: center" class="Table"></div>
+      
+      
+<script>      
+$(".TabViewButton").click(function () {
+    $("div.Map").show("fast");
+    $("div.Table").hide("fast");
     
+});
+
+$(".MapViewButton").click(function () {
+    $("div.Table").show("fast");
+    $("div.Map").hide("fast");  
+});
+</script>      
+      
+      
+<td colspan="3" valign="top" class='tabbed-content-container ui-corner-all'>
+<tr>
+    <td>
+        <button id= "TabViewButton"    class="TabViewButton" value =  "1">
+            Table</button>
+        <button id= "MapViewButton"    class="MapViewButton" value = "1">
+            Map</button>
+     </td>
+</tr>
+  
+	
+      
+      <div id="root123" style="float: center" class="Table"></div>
+
+      <div id="rootworldmap" style="float: center" class="Map">INSERT MAP HERE</div>
     
   </body>
 </html>
