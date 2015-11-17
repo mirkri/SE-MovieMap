@@ -51,9 +51,10 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	// Constructors. Creates new Instances of Panels
 	// HorizontalPanel grows to the right if items are added
 	// VerticalPanel grows downwards if items are added
-	private final HorizontalPanel filterPanel = new HorizontalPanel();
-	private final VerticalPanel mainPanel = new VerticalPanel();
-
+		private final VerticalPanel mainPanel = new VerticalPanel();
+    private final VerticalPanel navigationPanel = new VerticalPanel();
+	private final HorizontalPanel dropdownPanel = new HorizontalPanel();
+	
 	/**
 	 * This is the entry point method.
 	 */
@@ -86,21 +87,21 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         m_rangeSlider.addListener(this);
         
         //Add labels and slider to mainPanel
-        mainPanel.add(rangeLabel);
-        mainPanel.add(m_rangeSliderLabel);
-        mainPanel.add(m_rangeSlider);
+        navigationPanel.add(rangeLabel);
+        navigationPanel.add(m_rangeSliderLabel);
+        navigationPanel.add(m_rangeSlider);
         
         //Add dropdowns FilterPanel
-      	filterPanel.setSpacing(10);
-        filterPanel.add(languageSelection);
-        filterPanel.add(countrySelection);
-        filterPanel.add(genreSelection);
+      	dropdownPanel.setSpacing(10);
+        dropdownPanel.add(languageSelection);
+        dropdownPanel.add(countrySelection);
+        dropdownPanel.add(genreSelection);
         
         //Add button to FilterPanel
       	filterPanel.add(goButton);
 
         //Add filterPanel to mainPanel
-        mainPanel.add(filterPanel);
+        //mainPanel.add(filterPanel);
       	
         //Add dataTable to mainPanel
         mainPanel.add(dataTable);
@@ -108,6 +109,9 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		
         //Add mainPanel to RootPanel with id=root
 		RootPanel.get("root123").add(mainPanel);
+        RootPanel.get("rootDropdown").add(dropdownPanel);
+        RootPanel.get("rootNavigation").add(navigationPanel);
+		
 		
 		
 		
