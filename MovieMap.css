@@ -49,6 +49,7 @@ h1 {
 .Showtable-button {
 	clear: left;
 	margin: 0em 1em;
+}
 .Showmap-button {
 	clear: right;
 	margin: 0em 1em;
@@ -59,4 +60,12 @@ h1 {
 .rootMap {
 	clear: both;
 	margin: 1em 1em;
+}
+.Navigation{
+	clear: both;
+	margin: 1em 0em;
+	}
+.Dropdown{
+	clear: both;
+	margin: 1em 0em;
 }
