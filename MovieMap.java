@@ -55,13 +55,6 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	private final VerticalPanel mainPanel = new VerticalPanel();
     private final VerticalPanel navigationPanel = new VerticalPanel();
     private final HorizontalPanel dropdownPanel = new HorizontalPanel();
-
-=======
-		private final VerticalPanel mainPanel = new VerticalPanel();
-    private final VerticalPanel navigationPanel = new VerticalPanel();
-	private final HorizontalPanel dropdownPanel = new HorizontalPanel();
-	
->>>>>>> origin/feature/TableMapSwitch
 	/**
 	 * This is the entry point method.
 	 */
