@@ -51,7 +51,6 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	// Constructors. Creates new Instances of Panels
 	// HorizontalPanel grows to the right if items are added
 	// VerticalPanel grows downwards if items are added
-<<<<<<< HEAD
 	private final VerticalPanel mainPanel = new VerticalPanel();
     private final VerticalPanel navigationPanel = new VerticalPanel();
     private final HorizontalPanel dropdownPanel = new HorizontalPanel();
@@ -108,16 +107,9 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         
 		
         //Add mainPanel to RootPanel with id=root
-<<<<<<< HEAD
 		RootPanel.get("rootNavigation").add(navigationPanel);
         RootPanel.get("rootDropdown").add(dropdownPanel);
         RootPanel.get("root123").add(mainPanel);
-=======
-		RootPanel.get("root123").add(mainPanel);
-        RootPanel.get("rootDropdown").add(dropdownPanel);
-        RootPanel.get("rootNavigation").add(navigationPanel);
-		
->>>>>>> origin/feature/TableMapSwitch
 		
 		
 		
