@@ -98,6 +98,9 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         
         //Add button to FilterPanel
       	filterPanel.add(goButton);
+      	
+      	Button testButton = new Button("Test");
+      	filterPanel.add(testButton);
 
         //Add filterPanel to mainPanel
         mainPanel.add(filterPanel);
@@ -109,7 +112,13 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         //Add mainPanel to RootPanel with id=root
 		RootPanel.get("root123").add(mainPanel);
 		
-		
+		testButton.addClickHandler(new ClickHandler()
+		{
+			public void onClick(ClickEvent event)
+			{
+				testQuery("SELECT * FROM movies WHERE id=9999999");
+			}
+		});
 		
         //Handle click on button
 		goButton.addClickHandler(new ClickHandler()
@@ -185,6 +194,21 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 
 	private void queryDatabase() {
 		greetingService.getTableData(filter.generateQuery(), new AsyncCallback<ArrayList <String>>()
+		{
+				public void onFailure(Throwable caught)	
+				{
+					Window.alert(caught.getMessage());
+				}
+				public void onSuccess(ArrayList <String> result)
+				{
+					dataTable.removeAllRows();
+					fillTable(result);
+				}
+		});
+	}
+	
+	private void testQuery(String query) {
+		greetingService.getTableData(query, new AsyncCallback<ArrayList <String>>()
 		{
 				public void onFailure(Throwable caught)	
 				{
