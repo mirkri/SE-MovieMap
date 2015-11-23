@@ -52,6 +52,7 @@ h1 {
     border: 2px solid #ff0000;
     overflow: auto;
 }
+
 /** SwitchMapTableButtons**/
 .Showtable-button {
 	clear: left;
@@ -76,4 +77,19 @@ h1 {
 .Dropdown{
 	clear: both;
 	margin: 1em 0em;
+}
+
+
+/** CSV & PNG Export **/
+.exportCsv{
+	float: left;
+	width: 300px;
+    border: 2px solid #ff0000;
+    overflow: auto;
+}
+.exportPng{
+	float: left;
+	width: 300px;
+    border: 2px solid #ff0000;
+    overflow: auto;
 }

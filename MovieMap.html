@@ -13,10 +13,17 @@
     <!--                                                               -->
     <link type="text/css" rel="stylesheet" href="MovieMap.css">
     <link media="all" type="text/css" href="jquery-ui.css" rel="stylesheet"> 
-    <script src="jquery-1.4.4.min.js" type="text/javascript" charset="utf-8"></script> 
-    <script src="jquery-ui.min.js" type="text/javascript" charset="utf-8"></script> 
+    <script src="jquery-1.4.4.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
 
-    <!--                                           -->
+	<script src="jquery.plugin.html2canvas.js"></script>
+	<script src="base64.js"></script>    
+	<script src="html2canvas.js"></script>
+	<script src="canvas2image.js"></script>
+    <script src="exportCSV.js" type="text/javascript" charset="utf-8"></script>
+    <script src="exportPNG.js" type="text/javascript" charset="utf-8"></script>
+
+<!--                                           -->
     <!-- Any title is fine                         -->
     <!--                                           -->
     <title>MovieMap</title>
@@ -79,5 +86,8 @@ $(".Showmap-button").click(function () {
 <img style="float:initial; width: 800px; height: 400px;" src="/banner.gif" />	
 </div>    
     
+    <div class="exportCsv"><a href="#" id="export" role='button'>Export to CSV</a></div>
+    <div class="exportPng"><input onclick="captureDiv();" type="submit" value="Export Map to PNG"/></div>
+    <div class="cc"><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons Lizenzvertrag" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Dataset" property="dct:title" rel="dct:type">MovieMap</span> von <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Urheber</span> ist lizenziert unter einer <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Namensnennung - Weitergabe unter gleichen Bedingungen 4.0 International Lizenz</a>.</div>
   </body>
 </html>
