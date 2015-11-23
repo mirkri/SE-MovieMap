@@ -7,6 +7,8 @@ import com.client.Slider;
 import com.client.SliderEvent;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -295,10 +297,9 @@ public class MovieMap implements EntryPoint, SliderListener {
         }
         return jsArrayInteger; 
     }
-    
 	
     private void setMovieCountPerCountry() {
-		
+    	
 		// One occurrence of a country
 		ArrayList<String> cleanedCountries = new ArrayList<String>();
 		// Index corresponding to country in cleanedCountries-Array
@@ -308,7 +309,7 @@ public class MovieMap implements EntryPoint, SliderListener {
 		ArrayList<String> subListTemp = new ArrayList<String>();
 
 		// Iterate through countriesFromDB which holds all entries from the column "origin"
-		for (int i = 1; i < countriesFromDB.size(); i++) {
+		for (int i = 0; i < countriesFromDB.size(); i++) {
 			// Fill all the countries from the array into a sublist
 			// Split all entries that have multiple countries into single entries
 			String[] subList = countriesFromDB.get(i).split(", ");
