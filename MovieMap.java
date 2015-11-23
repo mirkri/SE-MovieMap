@@ -116,9 +116,10 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         dropdownPanel.add(languageSelection);
         dropdownPanel.add(countrySelection);
         dropdownPanel.add(genreSelection);
-        dropdownPanel.add(lengthSelection);
-        nameField.setText("Search by name");
-        dropdownPanel.add(nameField);
+        //TODO Sprint 3
+        //dropdownPanel.add(lengthSelection);
+        //nameField.setText("Search by name");
+        //dropdownPanel.add(nameField);
         
         
         //Add button to FilterPanel
@@ -253,8 +254,8 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		//set year through timeline
 		filter.setYearStart(yearStart);
 		filter.setYearEnd(yearEnd);
-		//set length filter
-		switch (lengthSelection.getItemText(lengthSelection.getSelectedIndex())) {
+		//set length filter TODO Sprint 3
+		/*switch (lengthSelection.getItemText(lengthSelection.getSelectedIndex())) {
 		case "0 to 59min": filter.setLength(1);
 			break;
 		case "60min to 120min": filter.setLength(2);
@@ -269,7 +270,9 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 			filter.setName(nameField.getText());
 		}else {
 			filter.setName(null);
-		}
+		}*/
+		filter.setLength(0);
+		filter.setName(null);
 		//Window.alert(filter.getLanguage() + "\n" + filter.getCountry() + "\n" + filter.getYearStart() + "\t" + filter.getYearEnd()); //Testing set Filter through message
 	}
 
