@@ -7,6 +7,9 @@ import com.client.Slider;
 import com.client.SliderEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -52,8 +55,9 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	// HorizontalPanel grows to the right if items are added
 	// VerticalPanel grows downwards if items are added
 	private final VerticalPanel mainPanel = new VerticalPanel();
-    private final VerticalPanel navigationPanel = new VerticalPanel();
+	private final VerticalPanel navigationPanel = new VerticalPanel();
     private final HorizontalPanel dropdownPanel = new HorizontalPanel();
+
 	/**
 	 * This is the entry point method.
 	 */
@@ -85,7 +89,7 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         m_rangeSlider = new RangeSlider("range", 1900, 2015, 2015, 2015);
         m_rangeSlider.addListener(this);
         
-        //Add labels and slider to mainPanel
+      //Add labels and slider to mainPanel
         navigationPanel.add(rangeLabel);
         navigationPanel.add(m_rangeSliderLabel);
         navigationPanel.add(m_rangeSlider);
@@ -98,20 +102,28 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         
         //Add button to FilterPanel
       	dropdownPanel.add(goButton);
+      	
+      	Button testButton = new Button("Test");
+      	dropdownPanel.add(testButton);
 
-        //Add filterPanel to mainPanel
-        //mainPanel.add(filterPanel);
       	
         //Add dataTable to mainPanel
         mainPanel.add(dataTable);
         
 		
         //Add mainPanel to RootPanel with id=root
+		RootPanel.get("root123").add(mainPanel);
 		RootPanel.get("rootNavigation").add(navigationPanel);
-        RootPanel.get("rootDropdown").add(dropdownPanel);
-        RootPanel.get("root123").add(mainPanel);
+		RootPanel.get("rootDropdown").add(dropdownPanel);
+		RootPanel.get("root123").add(mainPanel);
 		
-		
+		testButton.addClickHandler(new ClickHandler()
+		{
+			public void onClick(ClickEvent event)
+			{
+				testQuery("SELECT * FROM moviesnew WHERE id=9999999");
+			}
+		});
 		
         //Handle click on button
 		goButton.addClickHandler(new ClickHandler()
@@ -123,39 +135,80 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 			}
 		});
         
-        //Add a new list for Language selection
-        languageSelection.addItem("Choose Language");
-        languageSelection.addItem("English");
-        languageSelection.addItem("German");
-        languageSelection.addItem("Hindi");
-        languageSelection.addItem("French");
-        languageSelection.addItem("Italian");
-        //Set itemcount to 1 to make it a dropdown instead of showing all items
-        languageSelection.setVisibleItemCount(1);
-        
-        //Add a new list for Country selection
-        countrySelection.addItem("Choose Country");
-        countrySelection.addItem("United Kingdom");
-        countrySelection.addItem("United States of America");
-        countrySelection.addItem("India");
-        countrySelection.addItem("France");
-        countrySelection.addItem("Italy");
-        countrySelection.addItem("Germany");
-        //Set itemcount to 1 to make it a dropdown instead of showing all items
-        countrySelection.setVisibleItemCount(1);
-        
-      //Add a new list for Country selection
-        genreSelection.addItem("Choose Genre");
-        genreSelection.addItem("Comedy");
-        genreSelection.addItem("Drama");
-        genreSelection.addItem("Documentary");
-        genreSelection.addItem("Action");
-        genreSelection.addItem("Silent film");
-        genreSelection.addItem("Romance");
-        //Set itemcount to 1 to make it a dropdown instead of showing all items
-        genreSelection.setVisibleItemCount(1);
+		generateDropDown("language", languageSelection);
+		languageSelection.setVisibleItemCount(1);
+
+		// Generate Country DropDown
+
+		generateDropDown("country", countrySelection);
+		countrySelection.setVisibleItemCount(1);
+
+		// Populate Genre DropDown
+		generateDropDown("genre", genreSelection);
+		genreSelection.setVisibleItemCount(1);
         
         
+	}
+	
+	private void generateDropDown(String usage, ListBox listbox) {
+		// different in database
+		String tmp = null;
+		if (usage.equals("country")) {
+			tmp = "origin";
+		} else {
+			tmp = usage;
+		}
+		final String use = tmp;
+
+		final ListBox list = listbox;
+
+		// just for visual
+		String s1 = usage.substring(0, 1).toUpperCase() + usage.substring(1);
+		final String capitalized = s1;
+
+		greetingService.getTableData("SELECT " + use + " FROM moviesnew", new AsyncCallback<ArrayList<String>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert(caught.getMessage());
+			}
+
+			@Override
+			public void onSuccess(ArrayList<String> result) {
+				// building result into one String
+				StringBuilder sb = new StringBuilder();
+				for (String s : result) {
+					sb.append(s);
+					sb.append(",");
+				}
+				String wholeThingToString = sb.toString();
+				// cleaning String up
+				String regex1 = "\\s*\\bLanguage\\b\\s*";
+				String regex2 = "\\s*\\b" + use + "\\b\\s*";
+				String regex3 = "\\w*\\d\\w* *";
+				wholeThingToString = wholeThingToString.replaceAll(regex1, "").replaceAll(regex2, "").replaceAll(regex3,
+						"");
+				// splitting up
+				java.util.List<String> singleMenuePoints = Arrays.asList(wholeThingToString.split("\\s*,\\s*"));
+				// converting for unique items
+				HashSet<String> hs = new HashSet<String>();
+				hs.addAll(singleMenuePoints);
+				result.clear();
+				result.addAll(hs);
+				// sorting for user friendliness
+				Collections.sort(result);
+				// exchange again since db is different. otherwise use original
+				// word provided
+				if (capitalized.equals("Origin")) {
+					list.addItem("Choose Country");
+				} else {
+					list.addItem("Choose " + capitalized);
+				}
+				// populate list
+				for (int i = 0; i < result.size(); i++) {
+					list.addItem(result.get(i));
+				}
+			}
+		});
 	}
 	
 	private void setFilter() {
@@ -187,6 +240,21 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 
 	private void queryDatabase() {
 		greetingService.getTableData(filter.generateQuery(), new AsyncCallback<ArrayList <String>>()
+		{
+				public void onFailure(Throwable caught)	
+				{
+					Window.alert(caught.getMessage());
+				}
+				public void onSuccess(ArrayList <String> result)
+				{
+					dataTable.removeAllRows();
+					fillTable(result);
+				}
+		});
+	}
+	
+	private void testQuery(String query) {
+		greetingService.getTableData(query, new AsyncCallback<ArrayList <String>>()
 		{
 				public void onFailure(Throwable caught)	
 				{
