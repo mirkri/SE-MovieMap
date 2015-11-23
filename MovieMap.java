@@ -287,21 +287,7 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 				{
 					dataTable.removeAllRows();
 					fillTable(result);
-				}
-		});
-	}
-	
-	private void testQuery(String query) {
-		greetingService.getTableData(query, new AsyncCallback<ArrayList <String>>()
-		{
-				public void onFailure(Throwable caught)	
-				{
-					Window.alert(caught.getMessage());
-				}
-				public void onSuccess(ArrayList <String> result)
-				{
-					dataTable.removeAllRows();
-					fillTable(result);
+					updateGeoChart();
 				}
 		});
 	}
@@ -311,9 +297,16 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 			return;
 		int columnsCount = Integer.parseInt(data.get(0));
 		int entry = 1;
+		countriesFromDB.clear();
+		
 		for (int i = 0; i < ((data.size() - 1) / columnsCount); i++) {
 			for (int c = 0; c < columnsCount; c++) {
 				dataTable.setText(i, c, data.get(entry));
+				if (c == 5 && data.get(entry) != "" && data.get(entry) != "origin") {
+					// Fill the array with all entries from the column "origin"
+					// Leaves out blank entries and the first entry "origin"
+					countriesFromDB.add(data.get(entry));
+				}
 				entry++;
 			}
 		}
