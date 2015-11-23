@@ -10,8 +10,12 @@ import java.util.ArrayList;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsArrayInteger;
+import com.google.gwt.core.client.JsArrayString;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -30,7 +34,7 @@ public class MovieMap implements EntryPoint, SliderListener {
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
 	 */
-private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
+	private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
 	
 	private ListBox languageSelection = new ListBox();
 	private ListBox countrySelection = new ListBox();
@@ -41,6 +45,17 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	private RangeSlider m_rangeSlider;
 	private int yearEnd;
 	private int yearStart;
+	
+	// Column with countries
+    private ArrayList<String> countriesFromDB = new ArrayList<String>();  
+    
+    // Arrays for countries and number of movies per country
+    private ArrayList<String> countries = new ArrayList<String>();
+    private ArrayList<Integer> moviesPerCountry = new ArrayList<Integer>();
+
+    // Create JS-Arrays to pass to JavaScript
+    private JsArrayString countriesJS = toJsArrayString(countries);
+    private JsArrayInteger moviesPerCountryJS = toJsArrayInt(moviesPerCountry);
 	
 	
 	private Button goButton = new Button("Search");
@@ -118,6 +133,13 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 			{
 				setFilter();
 				queryDatabase();
+				
+			}
+		});
+		
+		Scheduler.get().scheduleDeferred(new Command() {
+			public void execute () {
+				updateGeoChart();
 			}
 		});
         
@@ -194,6 +216,7 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 				{
 					dataTable.removeAllRows();
 					fillTable(result);
+					updateGeoChart();
 				}
 		});
 	}
@@ -203,9 +226,17 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 			return;
 		int columnsCount = Integer.parseInt(data.get(0));
 		int entry = 1;
+		
+		countriesFromDB.clear();
+		
 		for (int i = 0; i < ((data.size() - 1) / columnsCount); i++) {
 			for (int c = 0; c < columnsCount; c++) {
 				dataTable.setText(i, c, data.get(entry));
+				if (c == 5 && data.get(entry) != "" && data.get(entry) != "origin") {
+					// Fill the array with all entries from the column "origin"
+					// Leaves out blank entries and the first entry "origin"
+					countriesFromDB.add(data.get(entry));
+				}
 				entry++;
 			}
 		}
@@ -246,6 +277,106 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
     public void onStop(SliderEvent e)
     {
         // We are not going to do anything onStop        
+    }
+    
+    // Convert an ArrayList<String> to a JavaScript-Array that holds Strings
+    public static JsArrayString toJsArrayString(ArrayList<String> input) {
+        JsArrayString jsArrayString = JsArrayString.createArray().cast();
+        for (String s : input) {
+            jsArrayString.push(s);
+        }
+        return jsArrayString; 
+    }
+    // Convert an ArrayList<Integer> to a JavaScript-Array that holds Integer
+    public static JsArrayInteger toJsArrayInt(ArrayList<Integer> input) {
+        JsArrayInteger jsArrayInteger = JsArrayInteger.createArray().cast();
+        for (int s : input) {
+            jsArrayInteger.push(s);
+        }
+        return jsArrayInteger; 
+    }
+    
+	
+    private void setMovieCountPerCountry() {
+		
+		// One occurrence of a country
+		ArrayList<String> cleanedCountries = new ArrayList<String>();
+		// Index corresponding to country in cleanedCountries-Array
+		ArrayList<Integer> countryCount = new ArrayList<Integer>();
+		
+		// Temporary array
+		ArrayList<String> subListTemp = new ArrayList<String>();
+
+		// Iterate through countriesFromDB which holds all entries from the column "origin"
+		for (int i = 1; i < countriesFromDB.size(); i++) {
+			// Fill all the countries from the array into a sublist
+			// Split all entries that have multiple countries into single entries
+			String[] subList = countriesFromDB.get(i).split(", ");
+			for (int j = 0; j < subList.length; j++) {
+				// Fill the temporary array with the entries from the sublist
+				subListTemp.add(subList[j]);
+			}	
+		}
+		
+		// Assign the temporary array to countriesFromDB-Array
+		countriesFromDB = subListTemp;
+		
+		// Iterate through countriesFromDB-Array
+		for (int i = 0; i < countriesFromDB.size(); i++) {
+			if (cleanedCountries.isEmpty()) {
+				// If empty, add first country from DB-entry to cleaned Array
+				cleanedCountries.add(countriesFromDB.get(i));
+				countryCount.add(1);
+			} else {
+				Boolean found = false;
+				for (int j = 0; j < cleanedCountries.size(); j++) {
+					// Iterate through cleaned Array
+					if (cleanedCountries.get(j) == countriesFromDB.get(i)) {
+						// If country from DB-entry is the same , add +1 to countryCount at same indexxe
+						countryCount.set(j, countryCount.get(j)+1);
+						found = true;
+					}
+				}
+				if (!found) {
+					// If country from the DB-entry is not found, add it at the end of cleaned Array
+					cleanedCountries.add(countriesFromDB.get(i));
+					countryCount.add(1);
+				}
+				found = false;
+			}
+		}
+		
+		// Assign arrays to the class-variables
+		countries = cleanedCountries;
+		moviesPerCountry = countryCount;
+		
+	}
+
+    // JSNI-method
+    private native void publishVariables() /*-{
+    	// Creates following variables which can be used by JavaScript
+      	$wnd.countries = this.@com.client.MovieMap::countriesJS;
+      	$wnd.moviesPerCountry = this.@com.client.MovieMap::moviesPerCountryJS;
+    }-*/;
+    
+    // JSNI-method
+    private native void loadMapData() /*-{
+    	// Creates following function which can be used by JavaScript
+    	$wnd.onGwtReady();
+  	}-*/;  
+    
+    private void updateGeoChart() {
+    	// Fill up the arrays "countries" and "moviesPerCountry" with the DB-data
+    	setMovieCountPerCountry();
+    	
+    	// Convert arrays to JS-Arrays
+    	countriesJS = toJsArrayString(countries);
+    	moviesPerCountryJS = toJsArrayInt(moviesPerCountry);
+    	
+    	// Publish the new arrays to JavaScript
+    	publishVariables();
+    	// Reload the GeoChart with the new data
+    	loadMapData();
     }
     
 }
