@@ -34,6 +34,7 @@ public class RangeSlider extends Slider
     public RangeSlider(String id, int min, int max, int defaultMin, int defaultMax)
     {
         super(id, getOptions(min, max, defaultMin, defaultMax));
+        super.setSize("30em", "0,5em");
     }
 
     /**

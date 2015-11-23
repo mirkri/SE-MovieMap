@@ -7,11 +7,18 @@ import com.client.Slider;
 import com.client.SliderEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsArrayInteger;
+import com.google.gwt.core.client.JsArrayString;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -19,6 +26,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.ListBox;
 
@@ -35,13 +43,25 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	private ListBox languageSelection = new ListBox();
 	private ListBox countrySelection = new ListBox();
 	private ListBox genreSelection = new ListBox();
+	private ListBox lengthSelection = new ListBox();
 	private Filter filter = new Filter();
+	final TextBox nameField = new TextBox();
 	
 	private Label m_rangeSliderLabel;
 	private RangeSlider m_rangeSlider;
 	private int yearEnd;
 	private int yearStart;
 	
+	//Column with countries
+	private ArrayList<String> countriesFromDB = new ArrayList<String>();  
+    
+    // Arrays for countries and number of movies per country
+    private ArrayList<String> countries = new ArrayList<String>();
+    private ArrayList<Integer> moviesPerCountry = new ArrayList<Integer>();
+
+    // Create JS-Arrays to pass to JavaScript
+    private JsArrayString countriesJS = toJsArrayString(countries);
+    private JsArrayInteger moviesPerCountryJS = toJsArrayInt(moviesPerCountry);
 	
 	private Button goButton = new Button("Search");
 
@@ -51,8 +71,9 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	// Constructors. Creates new Instances of Panels
 	// HorizontalPanel grows to the right if items are added
 	// VerticalPanel grows downwards if items are added
-	private final HorizontalPanel filterPanel = new HorizontalPanel();
 	private final VerticalPanel mainPanel = new VerticalPanel();
+	private final VerticalPanel navigationPanel = new VerticalPanel();
+    private final HorizontalPanel dropdownPanel = new HorizontalPanel();
 
 	/**
 	 * This is the entry point method.
@@ -85,25 +106,24 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         m_rangeSlider = new RangeSlider("range", 1900, 2015, 2015, 2015);
         m_rangeSlider.addListener(this);
         
-        //Add labels and slider to mainPanel
-        mainPanel.add(rangeLabel);
-        mainPanel.add(m_rangeSliderLabel);
-        mainPanel.add(m_rangeSlider);
+      //Add labels and slider to mainPanel
+        navigationPanel.add(rangeLabel);
+        navigationPanel.add(m_rangeSliderLabel);
+        navigationPanel.add(m_rangeSlider);
         
         //Add dropdowns FilterPanel
-      	filterPanel.setSpacing(10);
-        filterPanel.add(languageSelection);
-        filterPanel.add(countrySelection);
-        filterPanel.add(genreSelection);
+      	dropdownPanel.setSpacing(10);
+        dropdownPanel.add(languageSelection);
+        dropdownPanel.add(countrySelection);
+        dropdownPanel.add(genreSelection);
+        dropdownPanel.add(lengthSelection);
+        nameField.setText("Search by name");
+        dropdownPanel.add(nameField);
+        
         
         //Add button to FilterPanel
-      	filterPanel.add(goButton);
-      	
-      	Button testButton = new Button("Test");
-      	filterPanel.add(testButton);
+      	dropdownPanel.add(goButton);
 
-        //Add filterPanel to mainPanel
-        mainPanel.add(filterPanel);
       	
         //Add dataTable to mainPanel
         mainPanel.add(dataTable);
@@ -111,14 +131,9 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		
         //Add mainPanel to RootPanel with id=root
 		RootPanel.get("root123").add(mainPanel);
-		
-		testButton.addClickHandler(new ClickHandler()
-		{
-			public void onClick(ClickEvent event)
-			{
-				testQuery("SELECT * FROM movies WHERE id=9999999");
-			}
-		});
+		RootPanel.get("rootNavigation").add(navigationPanel);
+		RootPanel.get("rootDropdown").add(dropdownPanel);
+		RootPanel.get("root123").add(mainPanel);
 		
         //Handle click on button
 		goButton.addClickHandler(new ClickHandler()
@@ -129,40 +144,92 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 				queryDatabase();
 			}
 		});
+		
+		Scheduler.get().scheduleDeferred(new Command() {
+			public void execute () {
+				updateGeoChart();
+			}
+		});
+        //Generate Language dropdown
+		generateDropDown("language", languageSelection);
+		languageSelection.setVisibleItemCount(1);
+
+		// Generate Country DropDown
+		generateDropDown("country", countrySelection);
+		countrySelection.setVisibleItemCount(1);
+
+		// Populate Genre DropDown
+		generateDropDown("genre", genreSelection);
+		genreSelection.setVisibleItemCount(1);
         
-        //Add a new list for Language selection
-        languageSelection.addItem("Choose Language");
-        languageSelection.addItem("English");
-        languageSelection.addItem("German");
-        languageSelection.addItem("Hindi");
-        languageSelection.addItem("French");
-        languageSelection.addItem("Italian");
-        //Set itemcount to 1 to make it a dropdown instead of showing all items
-        languageSelection.setVisibleItemCount(1);
+		//Generate Length Dropdown
+		lengthSelection.addItem("All");
+		lengthSelection.addItem("0 to 59min");
+		lengthSelection.addItem("60min to 120min");
+		lengthSelection.addItem("over 120min");
+		lengthSelection.setVisibleItemCount(1);
         
-        //Add a new list for Country selection
-        countrySelection.addItem("Choose Country");
-        countrySelection.addItem("United Kingdom");
-        countrySelection.addItem("United States of America");
-        countrySelection.addItem("India");
-        countrySelection.addItem("France");
-        countrySelection.addItem("Italy");
-        countrySelection.addItem("Germany");
-        //Set itemcount to 1 to make it a dropdown instead of showing all items
-        countrySelection.setVisibleItemCount(1);
-        
-      //Add a new list for Country selection
-        genreSelection.addItem("Choose Genre");
-        genreSelection.addItem("Comedy");
-        genreSelection.addItem("Drama");
-        genreSelection.addItem("Documentary");
-        genreSelection.addItem("Action");
-        genreSelection.addItem("Silent film");
-        genreSelection.addItem("Romance");
-        //Set itemcount to 1 to make it a dropdown instead of showing all items
-        genreSelection.setVisibleItemCount(1);
-        
-        
+	}
+	
+	private void generateDropDown(String usage, ListBox listbox) {
+		// different in database
+		String tmp = null;
+		if (usage.equals("country")) {
+			tmp = "origin";
+		} else {
+			tmp = usage;
+		}
+		final String use = tmp;
+
+		final ListBox list = listbox;
+
+		// just for visual
+		String s1 = usage.substring(0, 1).toUpperCase() + usage.substring(1);
+		final String capitalized = s1;
+
+		greetingService.getTableData("SELECT " + use + " FROM moviesnew", new AsyncCallback<ArrayList<String>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert(caught.getMessage());
+			}
+
+			@Override
+			public void onSuccess(ArrayList<String> result) {
+				// building result into one String
+				StringBuilder sb = new StringBuilder();
+				for (String s : result) {
+					sb.append(s);
+					sb.append(",");
+				}
+				String wholeThingToString = sb.toString();
+				// cleaning String up
+				String regex1 = "\\s*\\bLanguage\\b\\s*";
+				String regex2 = "\\s*\\b" + use + "\\b\\s*";
+				String regex3 = "\\w*\\d\\w* *";
+				wholeThingToString = wholeThingToString.replaceAll(regex1, "").replaceAll(regex2, "").replaceAll(regex3,
+						"");
+				// splitting up
+				java.util.List<String> singleMenuePoints = Arrays.asList(wholeThingToString.split("\\s*,\\s*"));
+				// converting for unique items
+				HashSet<String> hs = new HashSet<String>();
+				hs.addAll(singleMenuePoints);
+				result.clear();
+				result.addAll(hs);
+				// sorting for user friendliness
+				Collections.sort(result);
+				// exchange again since db is different. otherwise use original
+				// word provided
+				if (capitalized.equals("Origin")) {
+					list.addItem("Choose Country");
+				} else {
+					list.addItem("Choose " + capitalized);
+				}
+				// populate list
+				for (int i = 0; i < result.size(); i++) {
+					list.addItem(result.get(i));
+				}
+			}
+		});
 	}
 	
 	private void setFilter() {
@@ -186,9 +253,23 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		//set year through timeline
 		filter.setYearStart(yearStart);
 		filter.setYearEnd(yearEnd);
-		//TODO setLength, setName
-		filter.setLength(0);
-		filter.setName(null);
+		//set length filter
+		switch (lengthSelection.getItemText(lengthSelection.getSelectedIndex())) {
+		case "0 to 59min": filter.setLength(1);
+			break;
+		case "60min to 120min": filter.setLength(2);
+			break;
+		case "over 120min": filter.setLength(3);
+			break;
+		default: filter.setLength(0);
+		}
+		//get search text for name search
+		String name = nameField.getText();
+		if(!(name.equals("Search by name") || name.equals(""))) {
+			filter.setName(nameField.getText());
+		}else {
+			filter.setName(null);
+		}
 		//Window.alert(filter.getLanguage() + "\n" + filter.getCountry() + "\n" + filter.getYearStart() + "\t" + filter.getYearEnd()); //Testing set Filter through message
 	}
 
@@ -270,6 +351,106 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
     public void onStop(SliderEvent e)
     {
         // We are not going to do anything onStop        
+    }
+    
+ // Convert an ArrayList<String> to a JavaScript-Array that holds Strings
+    public static JsArrayString toJsArrayString(ArrayList<String> input) {
+        JsArrayString jsArrayString = JsArrayString.createArray().cast();
+        for (String s : input) {
+            jsArrayString.push(s);
+        }
+        return jsArrayString; 
+    }
+    // Convert an ArrayList<Integer> to a JavaScript-Array that holds Integer
+    public static JsArrayInteger toJsArrayInt(ArrayList<Integer> input) {
+        JsArrayInteger jsArrayInteger = JsArrayInteger.createArray().cast();
+        for (int s : input) {
+            jsArrayInteger.push(s);
+        }
+        return jsArrayInteger; 
+    }
+    
+	
+    private void setMovieCountPerCountry() {
+		
+		// One occurrence of a country
+		ArrayList<String> cleanedCountries = new ArrayList<String>();
+		// Index corresponding to country in cleanedCountries-Array
+		ArrayList<Integer> countryCount = new ArrayList<Integer>();
+		
+		// Temporary array
+		ArrayList<String> subListTemp = new ArrayList<String>();
+
+		// Iterate through countriesFromDB which holds all entries from the column "origin"
+		for (int i = 1; i < countriesFromDB.size(); i++) {
+			// Fill all the countries from the array into a sublist
+			// Split all entries that have multiple countries into single entries
+			String[] subList = countriesFromDB.get(i).split(", ");
+			for (int j = 0; j < subList.length; j++) {
+				// Fill the temporary array with the entries from the sublist
+				subListTemp.add(subList[j]);
+			}	
+		}
+		
+		// Assign the temporary array to countriesFromDB-Array
+		countriesFromDB = subListTemp;
+		
+		// Iterate through countriesFromDB-Array
+		for (int i = 0; i < countriesFromDB.size(); i++) {
+			if (cleanedCountries.isEmpty()) {
+				// If empty, add first country from DB-entry to cleaned Array
+				cleanedCountries.add(countriesFromDB.get(i));
+				countryCount.add(1);
+			} else {
+				Boolean found = false;
+				for (int j = 0; j < cleanedCountries.size(); j++) {
+					// Iterate through cleaned Array
+					if (cleanedCountries.get(j) == countriesFromDB.get(i)) {
+						// If country from DB-entry is the same , add +1 to countryCount at same indexxe
+						countryCount.set(j, countryCount.get(j)+1);
+						found = true;
+					}
+				}
+				if (!found) {
+					// If country from the DB-entry is not found, add it at the end of cleaned Array
+					cleanedCountries.add(countriesFromDB.get(i));
+					countryCount.add(1);
+				}
+				found = false;
+			}
+		}
+		
+		// Assign arrays to the class-variables
+		countries = cleanedCountries;
+		moviesPerCountry = countryCount;
+		
+	}
+
+    // JSNI-method
+    private native void publishVariables() /*-{
+    	// Creates following variables which can be used by JavaScript
+      	$wnd.countries = this.@com.client.MovieMap::countriesJS;
+      	$wnd.moviesPerCountry = this.@com.client.MovieMap::moviesPerCountryJS;
+    }-*/;
+    
+    // JSNI-method
+    private native void loadMapData() /*-{
+    	// Creates following function which can be used by JavaScript
+    	$wnd.onGwtReady();
+  	}-*/;  
+    
+    private void updateGeoChart() {
+    	// Fill up the arrays "countries" and "moviesPerCountry" with the DB-data
+    	setMovieCountPerCountry();
+    	
+    	// Convert arrays to JS-Arrays
+    	countriesJS = toJsArrayString(countries);
+    	moviesPerCountryJS = toJsArrayInt(moviesPerCountry);
+    	
+    	// Publish the new arrays to JavaScript
+    	publishVariables();
+    	// Reload the GeoChart with the new data
+    	loadMapData();
     }
     
 }

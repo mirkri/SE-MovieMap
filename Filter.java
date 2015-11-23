@@ -33,7 +33,7 @@ public class Filter implements IsSerializable {
 	
 	public String generateQuery() {
 		String finalQuery = "";
-        String selectAllFromTable = "SELECT * FROM movies";
+        String selectAllFromTable = "SELECT * FROM moviesnew";
         String where = "WHERE";
         
         //Define the where statement
@@ -63,9 +63,9 @@ public class Filter implements IsSerializable {
 				    	if(length == 1) {
 				    		where = where + " AND (length < 60 AND length > 0)";
 				    	}else if(length == 2) {
-				    		where = where + " AND (length < 120 AND length > 59)";
+				    		where = where + " AND (length < 121 AND length > 59)";
 				    	}else {
-				    		where = where + " AND length > 119";
+				    		where = where + " AND length > 120";
 				    	}
 			    	} else {
 			    		if(length == 1) {

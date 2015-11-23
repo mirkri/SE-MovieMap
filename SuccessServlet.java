@@ -27,16 +27,13 @@ public class SuccessServlet extends HttpServlet{
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String keyString = req.getParameter("blob-key");
-		System.out.println(keyString);
 		
 		BlobKey blobkey = new BlobKey(keyString);
-		System.out.println(blobkey);
 		String line = null;
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new BlobstoreInputStream(blobkey)));
 		List<String> queries = new ArrayList<String>();
 		while((line = reader.readLine()) != null) {
 			String query = processLineToQuery(line);
-			System.out.println(query);
 			queries.add(query);
 		}
 		reader.close();
@@ -70,7 +67,7 @@ public class SuccessServlet extends HttpServlet{
         } catch (SQLException e) {
    
         }
-	    resp.sendRedirect("/");
+        req.getRequestDispatcher("/WEB-INF/uploadSuccess.jsp").forward(req, resp);
 
 		
 	}
@@ -78,14 +75,12 @@ public class SuccessServlet extends HttpServlet{
 	private String processLineToQuery(String line) throws IOException {
 		List<String> cleanedLine = cleanLine(line);
 		String query = generateQuery(cleanedLine);
-		System.out.println(cleanedLine);
 		return query;
 	}
 	
 	private List<String> cleanLine(String line) {
 		List<String> cleaned = new ArrayList<String>();
 		line = line.replaceAll("\t\t", "\t a \t");
-		System.out.println(line);
 		StringTokenizer stk = new StringTokenizer(line,"\t");
 		List<String> list = new ArrayList<String>();
 		while(stk.hasMoreTokens()) {
@@ -160,7 +155,7 @@ public class SuccessServlet extends HttpServlet{
 	
 	private String generateQuery(List<String> list) {
 		if(list.size() != 0) {
-			String query = "INSERT INTO movies (id,name,year,length,language,origin,genre) VALUES (";
+			String query = "INSERT INTO moviesnew (id,name,year,length,language,origin,genre) VALUES (";
 			String values = "";
 			for(String val: list) {
 				values += ",\'" + val + "\'";
