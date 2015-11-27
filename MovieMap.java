@@ -81,18 +81,9 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	@Override
 	public void onModuleLoad() {
 
-		// Sets Table Headers (Columns)
-		// Method "setText" is inherited from HTMLTable class
-		dataTable.setText(0, 0, "ID");
-		dataTable.setText(0, 1, "Name");
-		dataTable.setText(0, 2, "Year");
-		dataTable.setText(0, 3, "Length");
-		dataTable.setText(0, 4, "Language");
-		dataTable.setText(0, 5, "Origin");
-		dataTable.setText(0, 6, "Genre");
-
+		
 		// Add styles to elements of dataTable
-		dataTable.setCellPadding(6);
+		dataTable.setCellPadding(5);
 		
 		/*
          * Create a RangeSlider with:
@@ -287,7 +278,8 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		});
 	}
 
-	private void fillTable(ArrayList<String> data) {
+
+    private void fillTable(ArrayList<String> data) {
 		if (!(data != null))
 			return;
 		int columnsCount = Integer.parseInt(data.get(0));
@@ -297,6 +289,20 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		for (int i = 0; i < ((data.size() - 1) / columnsCount); i++) {
 			for (int c = 0; c < columnsCount; c++) {
 				dataTable.setText(i, c, data.get(entry));
+			//set name/CSS identifier	
+			if (i%2==0 && i!=0){	
+				dataTable.getCellFormatter().addStyleName(i, c, "cellsAlt");
+			}
+			else if (i%2==1 && i!=0){
+				dataTable.getCellFormatter().addStyleName(i, c, "cells");
+			}
+			if (i==0){
+				dataTable.getCellFormatter().addStyleName(i, c, "cellsHeader");
+			
+			}
+			
+			
+			
 				if (c == 5 && data.get(entry) != "" && data.get(entry) != "origin") {
 					// Fill the array with all entries from the column "origin"
 					// Leaves out blank entries and the first entry "origin"
@@ -304,8 +310,20 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 				}
 				entry++;
 			}
+			//Overwrite Titels for DB
+			dataTable.setText(0, 0, "ID");
+			dataTable.setText(0, 1, "Title");
+			dataTable.setText(0, 2, "Year");
+			dataTable.setText(0, 3, "Length");
+			dataTable.setText(0, 4, "Language");
+			dataTable.setText(0, 5, "Origin");
+			dataTable.setText(0, 6, "Genre");
+			}
 		}
-	}
+    
+    
+    
+    
 	
 	@Override
     public void onChange(SliderEvent e)
