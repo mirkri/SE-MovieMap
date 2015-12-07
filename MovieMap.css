@@ -42,9 +42,41 @@ h1 {
 /** DataTable**/
 .Table {
 	clear: both;
-	margin: 2em 2em;
+	margin: 2em 0em;
+	border-collapse: collapse;
+	border: 1px solid #8DCADE;
+	padding: 3px 70px 2px 70px;
+	background-color: #ffffff;
+	color: #8DCADE;
 }
 
+
+.cells {
+    color : #000000;
+    background-color: #f8f8f8;
+    height: 2em;
+    border-bottom: 1px solid #c0c0c0;
+    border-collapse: collapse;
+}
+
+.cellsAlt {
+    color : #400040;
+    background-color: #f3fcfe;
+    font-style: bold;
+    height: 2em;
+    border-bottom: 1px solid #c0c0c0;
+    border-collapse: collapse;
+
+}
+
+.cellsHeader {
+    color : #ffffff;
+    background-color: #0d3e57;
+    font-style: bold;
+    font-size: 140%;
+    border-bottom: 1px solid #c0c0c0;
+    border-collapse: collapse;
+}
 /** CreativeCommons**/
 .cc {
 	float: right;
@@ -79,14 +111,20 @@ h1 {
 	margin: 1em 0em;
 }
 
+
 /** CSV & PNG Export **/
 .exportCsv{
 	float: right;
 	width: 300px;
+	background-color: #c0c0c0;
+	color: #ff0080;
+	font-size: 120%;
+	font-style: bold;
     overflow: auto;
 }
 .exportPng{
 	float: right;
 	width: 300px;
+    border: 2px solid #ff0000;
     overflow: auto;
 }

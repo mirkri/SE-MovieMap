@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,12 +32,34 @@ public class SuccessServlet extends HttpServlet{
 		BlobKey blobkey = new BlobKey(keyString);
 		String line = null;
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new BlobstoreInputStream(blobkey)));
-		List<String> queries = new ArrayList<String>();
+		List<String> values = new ArrayList<String>();
 		while((line = reader.readLine()) != null) {
-			String query = processLineToQuery(line);
-			queries.add(query);
+			String value = processLineToQuery(line);
+			if (!value.isEmpty()) values.add(value);
 		}
 		reader.close();
+		
+		int numOf1000 = values.size() / 1000 + 1;
+		List<String> queries = new ArrayList<String>(numOf1000);
+		int counter = 0;
+		for(int i = 0;i < numOf1000; ++i) {
+			String tmp = "INSERT INTO moviesnew (id,name,year,length,language,origin,genre) VALUES (";
+			queries.add(tmp);
+		}
+		for(int i = 0;i < numOf1000; ++i) {
+			for(int j = 0; j < 1000; ++j) {
+				while(counter < values.size()) {
+					String newQuery = queries.get(counter / 1000) + values.get(counter) + "), (";
+					queries.set(counter++ / 1000, newQuery);
+				}
+			}
+		}
+		for(int i = 0;i < numOf1000; ++i) {
+			String tmp = queries.get(i);
+			tmp = tmp.substring(0, tmp.length() - 3);
+			queries.set(i, tmp);
+		}
+		
 		
 		PrintWriter out = resp.getWriter();
 		Connection conn = null;
@@ -50,16 +73,11 @@ public class SuccessServlet extends HttpServlet{
         }
         try {
 		    try {
-		  	  for(String query: queries) {
-		  		  PreparedStatement stmt = conn.prepareStatement(query);
-		  		  int success = 2;
-		  		  success = stmt.executeUpdate();
-		  		  if (success == 1) {
-		  			  out.println("<html><head></head><body>Success! Redirecting in 3 seconds...</body></html>");
-		  		  } else if (success == 0) {
-		  			  out.println("<html><head></head><body>Failure! Please try again! Redirecting in 3 seconds...</body></html>");
-		  		  }
-		  	  }
+		    	for (String query: queries) {
+		    		System.out.println(query);
+			    	PreparedStatement st = conn.prepareStatement(query);
+			    	st.executeUpdate();
+		    	}
 		          
 		    } finally {
 		        conn.close();
@@ -73,14 +91,15 @@ public class SuccessServlet extends HttpServlet{
 	}
 	
 	private String processLineToQuery(String line) throws IOException {
-		List<String> cleanedLine = cleanLine(line);
-		String query = generateQuery(cleanedLine);
-		return query;
+		String cleanedLine = cleanLine(line);
+		//String query = generateQuery(cleanedLine);
+		return cleanedLine;
 	}
 	
-	private List<String> cleanLine(String line) {
+	private String cleanLine(String line) {
 		List<String> cleaned = new ArrayList<String>();
 		line = line.replaceAll("\t\t", "\t a \t");
+		line = line.replaceAll("'","");
 		StringTokenizer stk = new StringTokenizer(line,"\t");
 		List<String> list = new ArrayList<String>();
 		while(stk.hasMoreTokens()) {
@@ -88,13 +107,15 @@ public class SuccessServlet extends HttpServlet{
 		}
 		if(list.size() != 0) {
 			cleaned.add(list.get(0));
-		}else return list;
+		}else return "";
 		for(int i = 2; i < 9 && i < list.size() ; ++i) {
 			switch (i) {
 			case 2: cleaned.add(list.get(i));
 					break;
 			case 3: if(list.get(i).length() > 3) {
 					cleaned.add(list.get(i).substring(0,4));
+					} else {
+						cleaned.add(" ");
 					}
 					break;
 			case 4: break;
@@ -150,17 +171,20 @@ public class SuccessServlet extends HttpServlet{
 					break;
 			}
 		}
-		return cleaned;
-	}
-	
-	private String generateQuery(List<String> list) {
-		if(list.size() != 0) {
-			String query = "INSERT INTO moviesnew (id,name,year,length,language,origin,genre) VALUES (";
-			String values = "";
-			for(String val: list) {
+		String values = "";
+		if (cleaned.size() == 7) {
+			for(String val: cleaned) {
 				values += ",\'" + val + "\'";
 			}
-			query += values.substring(1) + ")";
+			return values.substring(1);
+		} else return values;
+		
+	}
+	
+	private String generateQuery(String line) {
+		if(line.equals("")) {
+			String query = "INSERT INTO moviesnew (id,name,year,length,language,origin,genre) VALUES (";
+			query += line + ")";
 			return query;
 		} else return "";
 	}

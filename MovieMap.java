@@ -81,16 +81,6 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	@Override
 	public void onModuleLoad() {
 
-		// Sets Table Headers (Columns)
-		// Method "setText" is inherited from HTMLTable class
-		dataTable.setText(0, 0, "ID");
-		dataTable.setText(0, 1, "Name");
-		dataTable.setText(0, 2, "Year");
-		dataTable.setText(0, 3, "Length");
-		dataTable.setText(0, 4, "Language");
-		dataTable.setText(0, 5, "Origin");
-		dataTable.setText(0, 6, "Genre");
-
 		// Add styles to elements of dataTable
 		dataTable.setCellPadding(6);
 		
@@ -116,10 +106,9 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         dropdownPanel.add(languageSelection);
         dropdownPanel.add(countrySelection);
         dropdownPanel.add(genreSelection);
-        //TODO Sprint 3
-        //dropdownPanel.add(lengthSelection);
-        //nameField.setText("Search by name");
-        //dropdownPanel.add(nameField);
+        dropdownPanel.add(lengthSelection);
+        nameField.setText("Search by name");
+        dropdownPanel.add(nameField);
         
         
         //Add button to FilterPanel
@@ -151,6 +140,68 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 				updateGeoChart();
 			}
 		});
+		
+		//Fill first few
+		languageSelection.addItem("Choose Language");
+		languageSelection.addItem("Aboriginal Malay languages");
+		languageSelection.addItem("Aceh");
+		languageSelection.addItem("Adamawa");
+		languageSelection.addItem("Afrikaans");
+		languageSelection.addItem("Akan");
+		languageSelection.addItem("Albanian");
+		languageSelection.addItem("Algonquin");
+		languageSelection.addItem("American English");
+		languageSelection.addItem("American Sign");
+		languageSelection.addItem("Amharic");
+		languageSelection.addItem("Ancient");
+		languageSelection.addItem("Ancient Greek");
+		languageSelection.addItem("Apache");
+		languageSelection.addItem("Arabic");
+		languageSelection.addItem("Aramaic");
+		languageSelection.addItem("Armenien");
+		languageSelection.addItem("Assamese");
+		languageSelection.addItem("Assyrian");
+		
+		genreSelection.addItem("Choose Genre");
+		genreSelection.addItem("& Literature");
+		genreSelection.addItem("Absurdism");
+		genreSelection.addItem("Acid western");
+		genreSelection.addItem("Action");
+		genreSelection.addItem("Action Comedy");
+		genreSelection.addItem("Action Thrillers");
+		genreSelection.addItem("Action/Adventure");
+		genreSelection.addItem("Addiction Drama");
+		genreSelection.addItem("Adult");
+		genreSelection.addItem("Adventure");
+		genreSelection.addItem("Adventure Comedy");
+		genreSelection.addItem("Airplanes and airports");
+		genreSelection.addItem("Albino bias");
+		genreSelection.addItem("Alien Film");
+		genreSelection.addItem("Alien Invasion");
+		genreSelection.addItem("Americana");
+		genreSelection.addItem("Animal Picture");
+		genreSelection.addItem("Animals");
+		
+		countrySelection.addItem("Choose Country");
+		countrySelection.addItem("Afghanistan");
+		countrySelection.addItem("Albania");
+		countrySelection.addItem("Algeria");
+		countrySelection.addItem("Argentina");
+		countrySelection.addItem("Armenia");
+		countrySelection.addItem("Aruba");
+		countrySelection.addItem("Australia");
+		countrySelection.addItem("Azerbaijan");
+		countrySelection.addItem("Bahamas");
+		countrySelection.addItem("Bahrain");
+		countrySelection.addItem("Bangladesh");
+		countrySelection.addItem("Belgium");
+		countrySelection.addItem("Bhutan");
+		countrySelection.addItem("Bolivia");
+		countrySelection.addItem("Bosnia and Herzegovina");
+		countrySelection.addItem("Brazil");
+		countrySelection.addItem("Bulgaria");
+		
+		
         //Generate Language dropdown
 		generateDropDown("language", languageSelection);
 		languageSelection.setVisibleItemCount(1);
@@ -173,6 +224,7 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	}
 	
 	private void generateDropDown(String usage, ListBox listbox) {
+		
 		// different in database
 		String tmp = null;
 		if (usage.equals("country")) {
@@ -220,14 +272,12 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 				Collections.sort(result);
 				// exchange again since db is different. otherwise use original
 				// word provided
-				if (capitalized.equals("Origin")) {
-					list.addItem("Choose Country");
-				} else {
-					list.addItem("Choose " + capitalized);
-				}
 				// populate list
-				for (int i = 0; i < result.size(); i++) {
-					list.addItem(result.get(i));
+				for (int i = 19; i < result.size(); i++) {
+					String tmp = result.get(i);
+					if (!(tmp.equals(" ")) || tmp.isEmpty()) {
+						list.addItem(result.get(i));
+					}
 				}
 			}
 		});
@@ -254,8 +304,7 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		//set year through timeline
 		filter.setYearStart(yearStart);
 		filter.setYearEnd(yearEnd);
-		//set length filter TODO Sprint 3
-		/*switch (lengthSelection.getItemText(lengthSelection.getSelectedIndex())) {
+		switch (lengthSelection.getItemText(lengthSelection.getSelectedIndex())) {
 		case "0 to 59min": filter.setLength(1);
 			break;
 		case "60min to 120min": filter.setLength(2);
@@ -270,10 +319,7 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 			filter.setName(nameField.getText());
 		}else {
 			filter.setName(null);
-		}*/
-		filter.setLength(0);
-		filter.setName(null);
-		//Window.alert(filter.getLanguage() + "\n" + filter.getCountry() + "\n" + filter.getYearStart() + "\t" + filter.getYearEnd()); //Testing set Filter through message
+		}
 	}
 
 	private void queryDatabase() {
@@ -302,13 +348,35 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		for (int i = 0; i < ((data.size() - 1) / columnsCount); i++) {
 			for (int c = 0; c < columnsCount; c++) {
 				dataTable.setText(i, c, data.get(entry));
-				if (c == 5 && data.get(entry) != "" && data.get(entry) != "origin") {
-					// Fill the array with all entries from the column "origin"
-					// Leaves out blank entries and the first entry "origin"
-					countriesFromDB.add(data.get(entry));
-				}
-				entry++;
+			//set name/CSS identifier	
+			if (i%2==0 && i!=0){	
+				dataTable.getCellFormatter().addStyleName(i, c, "cellsAlt");
 			}
+			else if (i%2==1 && i!=0){
+				dataTable.getCellFormatter().addStyleName(i, c, "cells");
+			}
+			if (i==0){
+				dataTable.getCellFormatter().addStyleName(i, c, "cellsHeader");
+			
+			}
+			
+			
+			
+			if (c == 5 && data.get(entry) != "" && data.get(entry) != "origin") {
+				// Fill the array with all entries from the column "origin"
+				// Leaves out blank entries and the first entry "origin"
+				countriesFromDB.add(data.get(entry));
+			}
+			entry++;
+		}
+		//Overwrite Titels for DB
+		dataTable.setText(0, 0, "ID");
+		dataTable.setText(0, 1, "Title");
+		dataTable.setText(0, 2, "Year");
+		dataTable.setText(0, 3, "Length");
+		dataTable.setText(0, 4, "Language");
+		dataTable.setText(0, 5, "Origin");
+		dataTable.setText(0, 6, "Genre");
 		}
 	}
 	
