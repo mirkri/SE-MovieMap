@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Timer;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -49,8 +50,8 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	
 	private Label m_rangeSliderLabel;
 	private RangeSlider m_rangeSlider;
-	private int yearEnd;
-	private int yearStart;
+	private int yearStart = 2013;
+	private int yearEnd = 2015;
 	
 	//Column with countries
 	private ArrayList<String> countriesFromDB = new ArrayList<String>();  
@@ -68,12 +69,15 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	// Constructor. Creates new Instance of Flextable
 	// Flextable automatically resizes on demand - there is no explicit size
 	private final FlexTable dataTable = new FlexTable();
+	private final FlexTable headerTable = new FlexTable();
 	// Constructors. Creates new Instances of Panels
 	// HorizontalPanel grows to the right if items are added
 	// VerticalPanel grows downwards if items are added
+	private final VerticalPanel headerPanel = new VerticalPanel();
 	private final VerticalPanel mainPanel = new VerticalPanel();
 	private final VerticalPanel navigationPanel = new VerticalPanel();
     private final HorizontalPanel dropdownPanel = new HorizontalPanel();
+  	private final HorizontalPanel searchPanel = new HorizontalPanel();
 
 	/**
 	 * This is the entry point method.
@@ -81,18 +85,12 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	@Override
 	public void onModuleLoad() {
 
-		// Sets Table Headers (Columns)
-		// Method "setText" is inherited from HTMLTable class
-		dataTable.setText(0, 0, "ID");
-		dataTable.setText(0, 1, "Name");
-		dataTable.setText(0, 2, "Year");
-		dataTable.setText(0, 3, "Length");
-		dataTable.setText(0, 4, "Language");
-		dataTable.setText(0, 5, "Origin");
-		dataTable.setText(0, 6, "Genre");
-
+		
 		// Add styles to elements of dataTable
-		dataTable.setCellPadding(6);
+		dataTable.setCellPadding(8);
+		dataTable.setCellSpacing(0);
+		headerTable.setCellPadding(8);
+		headerTable.setCellSpacing(0);
 		
 		/*
          * Create a RangeSlider with:
@@ -101,14 +99,16 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
          * default: most recent year in database
          */
         Label rangeLabel = new Label("Year:");
-        m_rangeSliderLabel = new Label("2015");
-        m_rangeSliderLabel.addStyleName("slider-values");
-        m_rangeSlider = new RangeSlider("range", 1900, 2015, 2015, 2015);
+        rangeLabel.addStyleName("sliderTitle");
+        m_rangeSliderLabel = new Label("2013 - 2015");
+        m_rangeSliderLabel.addStyleName("sliderValue");
+        m_rangeSlider = new RangeSlider("range", 1900, 2015, yearStart, yearEnd);
         m_rangeSlider.addListener(this);
+        m_rangeSlider.addStyleName("sliderStyle");
         
       //Add labels and slider to mainPanel
-        navigationPanel.add(rangeLabel);
-        navigationPanel.add(m_rangeSliderLabel);
+        //navigationPanel.add(rangeLabel);
+        //navigationPanel.add(m_rangeSliderLabel);
         navigationPanel.add(m_rangeSlider);
         
         //Add dropdowns FilterPanel
@@ -117,23 +117,29 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         dropdownPanel.add(countrySelection);
         dropdownPanel.add(genreSelection);
         dropdownPanel.add(lengthSelection);
-        nameField.setText("Search by name");
-        dropdownPanel.add(nameField);
-        
         
         //Add button to FilterPanel
-      	dropdownPanel.add(goButton);
-
+        nameField.setText("Search by name");
+        nameField.addStyleName("textBox");
+      	searchPanel.add(nameField);
+      	searchPanel.add(goButton);
+      	
       	
         //Add dataTable to mainPanel
+      	headerPanel.add(headerTable);
         mainPanel.add(dataTable);
         
 		
         //Add mainPanel to RootPanel with id=root
 		RootPanel.get("root123").add(mainPanel);
 		RootPanel.get("rootNavigation").add(navigationPanel);
+		RootPanel.get("title").add(rangeLabel);
+		RootPanel.get("value").add(m_rangeSliderLabel);
 		RootPanel.get("rootDropdown").add(dropdownPanel);
 		RootPanel.get("root123").add(mainPanel);
+		RootPanel.get("headerTable").add(headerPanel);
+		RootPanel.get("rootSearch").add(searchPanel);
+		RootPanel.get().addStyleName("body");
 		
         //Handle click on button
 		goButton.addClickHandler(new ClickHandler()
@@ -150,6 +156,7 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 				updateGeoChart();
 			}
 		});
+		
         //Generate Language dropdown
 		generateDropDown("language", languageSelection);
 		languageSelection.setVisibleItemCount(1);
@@ -287,7 +294,7 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		});
 	}
 
-	private void fillTable(ArrayList<String> data) {
+    private void fillTable(ArrayList<String> data) {
 		if (!(data != null))
 			return;
 		int columnsCount = Integer.parseInt(data.get(0));
@@ -296,15 +303,52 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		
 		for (int i = 0; i < ((data.size() - 1) / columnsCount); i++) {
 			for (int c = 0; c < columnsCount; c++) {
-				dataTable.setText(i, c, data.get(entry));
+				if(i!=0){
+					dataTable.setText(i, c, data.get(entry));
+				}
+				//set name/CSS identifier	
+				dataTable.getRowFormatter().addStyleName(0, "watchListHeader");
+				if (i!=0 && c!=6){	
+					dataTable.getCellFormatter().addStyleName(i, c, "cells");
+				}
+				if (i==0){
+					headerTable.getCellFormatter().addStyleName(i, c, "cellsHeader");
+				}
+				if (c==6 && i!=0){
+					dataTable.getCellFormatter().addStyleName(i, c, "cellsRight");
+				}
 				if (c == 5 && data.get(entry) != "" && data.get(entry) != "origin") {
 					// Fill the array with all entries from the column "origin"
 					// Leaves out blank entries and the first entry "origin"
 					countriesFromDB.add(data.get(entry));
 				}
 				entry++;
-			}
+			}	
 		}
+		//Overwrite Titels for DB
+		headerTable.setText(0, 0, "ID");
+		headerTable.setText(0, 1, "Title");
+		headerTable.setText(0, 2, "Year");
+		headerTable.setText(0, 3, "Length");
+		headerTable.setText(0, 4, "Language");
+		headerTable.setText(0, 5, "Origin");
+		headerTable.setText(0, 6, "Genre");
+		
+		headerTable.getColumnFormatter().setWidth(0, "90");
+		headerTable.getColumnFormatter().setWidth(1, "180");
+		headerTable.getColumnFormatter().setWidth(2, "50");
+		headerTable.getColumnFormatter().setWidth(3, "65");
+		headerTable.getColumnFormatter().setWidth(4, "200");
+		headerTable.getColumnFormatter().setWidth(5, "245");
+		headerTable.getColumnFormatter().setWidth(6, "375");
+		
+		dataTable.getColumnFormatter().setWidth(0, "90");
+		dataTable.getColumnFormatter().setWidth(1, "180");
+		dataTable.getColumnFormatter().setWidth(2, "50");
+		dataTable.getColumnFormatter().setWidth(3, "65");
+		dataTable.getColumnFormatter().setWidth(4, "200");
+		dataTable.getColumnFormatter().setWidth(5, "245");
+		dataTable.getColumnFormatter().setWidth(6, "375");
 	}
 	
 	@Override
@@ -373,7 +417,7 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		ArrayList<String> subListTemp = new ArrayList<String>();
 
 		// Iterate through countriesFromDB which holds all entries from the column "origin"
-		for (int i = 1; i < countriesFromDB.size(); i++) {
+		for (int i = 0; i < countriesFromDB.size(); i++) {
 			// Fill all the countries from the array into a sublist
 			// Split all entries that have multiple countries into single entries
 			String[] subList = countriesFromDB.get(i).split(", ");
