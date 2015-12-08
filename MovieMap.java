@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.ListBox;
 
+// TODO: Auto-generated Javadoc
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
@@ -40,39 +41,71 @@ public class MovieMap implements EntryPoint, SliderListener {
 	 */
 private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
 	
+	/** The language selection. */
 	private ListBox languageSelection = new ListBox();
+	
+	/** The country selection. */
 	private ListBox countrySelection = new ListBox();
+	
+	/** The genre selection. */
 	private ListBox genreSelection = new ListBox();
+	
+	/** The length selection. */
 	private ListBox lengthSelection = new ListBox();
+	
+	/** The filter. */
 	private Filter filter = new Filter();
+	
+	/** The name field. */
 	final TextBox nameField = new TextBox();
 	
+	/** The m_range slider label. */
 	private Label m_rangeSliderLabel;
+	
+	/** The m_range slider. */
 	private RangeSlider m_rangeSlider;
+	
+	/** The year end. */
 	private int yearEnd;
+	
+	/** The year start. */
 	private int yearStart;
 	
+	/** The countries from db. */
 	//Column with countries
 	private ArrayList<String> countriesFromDB = new ArrayList<String>();  
     
+    /** The countries. */
     // Arrays for countries and number of movies per country
     private ArrayList<String> countries = new ArrayList<String>();
+    
+    /** The movies per country. */
     private ArrayList<Integer> moviesPerCountry = new ArrayList<Integer>();
 
+    /** The countries js. */
     // Create JS-Arrays to pass to JavaScript
     private JsArrayString countriesJS = toJsArrayString(countries);
+    
+    /** The movies per country js. */
     private JsArrayInteger moviesPerCountryJS = toJsArrayInt(moviesPerCountry);
 	
+	/** The go button. */
 	private Button goButton = new Button("Search");
 
 	// Constructor. Creates new Instance of Flextable
+	/** The data table. */
 	// Flextable automatically resizes on demand - there is no explicit size
 	private final FlexTable dataTable = new FlexTable();
 	// Constructors. Creates new Instances of Panels
 	// HorizontalPanel grows to the right if items are added
+	/** The main panel. */
 	// VerticalPanel grows downwards if items are added
 	private final VerticalPanel mainPanel = new VerticalPanel();
+	
+	/** The navigation panel. */
 	private final VerticalPanel navigationPanel = new VerticalPanel();
+    
+    /** The dropdown panel. */
     private final HorizontalPanel dropdownPanel = new HorizontalPanel();
 
 	/**
@@ -80,16 +113,6 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 	 */
 	@Override
 	public void onModuleLoad() {
-
-		// Sets Table Headers (Columns)
-		// Method "setText" is inherited from HTMLTable class
-		dataTable.setText(0, 0, "ID");
-		dataTable.setText(0, 1, "Name");
-		dataTable.setText(0, 2, "Year");
-		dataTable.setText(0, 3, "Length");
-		dataTable.setText(0, 4, "Language");
-		dataTable.setText(0, 5, "Origin");
-		dataTable.setText(0, 6, "Genre");
 
 		// Add styles to elements of dataTable
 		dataTable.setCellPadding(6);
@@ -106,7 +129,7 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         m_rangeSlider = new RangeSlider("range", 1900, 2015, 2015, 2015);
         m_rangeSlider.addListener(this);
         
-      //Add labels and slider to mainPanel
+        //Add labels and slider to mainPanel
         navigationPanel.add(rangeLabel);
         navigationPanel.add(m_rangeSliderLabel);
         navigationPanel.add(m_rangeSlider);
@@ -150,6 +173,68 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 				updateGeoChart();
 			}
 		});
+		
+		//Fill first few
+		languageSelection.addItem("Choose Language");
+		languageSelection.addItem("Aboriginal Malay languages");
+		languageSelection.addItem("Aceh");
+		languageSelection.addItem("Adamawa");
+		languageSelection.addItem("Afrikaans");
+		languageSelection.addItem("Akan");
+		languageSelection.addItem("Albanian");
+		languageSelection.addItem("Algonquin");
+		languageSelection.addItem("American English");
+		languageSelection.addItem("American Sign");
+		languageSelection.addItem("Amharic");
+		languageSelection.addItem("Ancient");
+		languageSelection.addItem("Ancient Greek");
+		languageSelection.addItem("Apache");
+		languageSelection.addItem("Arabic");
+		languageSelection.addItem("Aramaic");
+		languageSelection.addItem("Armenien");
+		languageSelection.addItem("Assamese");
+		languageSelection.addItem("Assyrian");
+		
+		genreSelection.addItem("Choose Genre");
+		genreSelection.addItem("& Literature");
+		genreSelection.addItem("Absurdism");
+		genreSelection.addItem("Acid western");
+		genreSelection.addItem("Action");
+		genreSelection.addItem("Action Comedy");
+		genreSelection.addItem("Action Thrillers");
+		genreSelection.addItem("Action/Adventure");
+		genreSelection.addItem("Addiction Drama");
+		genreSelection.addItem("Adult");
+		genreSelection.addItem("Adventure");
+		genreSelection.addItem("Adventure Comedy");
+		genreSelection.addItem("Airplanes and airports");
+		genreSelection.addItem("Albino bias");
+		genreSelection.addItem("Alien Film");
+		genreSelection.addItem("Alien Invasion");
+		genreSelection.addItem("Americana");
+		genreSelection.addItem("Animal Picture");
+		genreSelection.addItem("Animals");
+		
+		countrySelection.addItem("Choose Country");
+		countrySelection.addItem("Afghanistan");
+		countrySelection.addItem("Albania");
+		countrySelection.addItem("Algeria");
+		countrySelection.addItem("Argentina");
+		countrySelection.addItem("Armenia");
+		countrySelection.addItem("Aruba");
+		countrySelection.addItem("Australia");
+		countrySelection.addItem("Azerbaijan");
+		countrySelection.addItem("Bahamas");
+		countrySelection.addItem("Bahrain");
+		countrySelection.addItem("Bangladesh");
+		countrySelection.addItem("Belgium");
+		countrySelection.addItem("Bhutan");
+		countrySelection.addItem("Bolivia");
+		countrySelection.addItem("Bosnia and Herzegovina");
+		countrySelection.addItem("Brazil");
+		countrySelection.addItem("Bulgaria");
+		
+		
         //Generate Language dropdown
 		generateDropDown("language", languageSelection);
 		languageSelection.setVisibleItemCount(1);
@@ -171,7 +256,14 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         
 	}
 	
+	/**
+	 * Generate drop down.
+	 *
+	 * @param usage the usage
+	 * @param listbox the listbox
+	 */
 	private void generateDropDown(String usage, ListBox listbox) {
+		
 		// different in database
 		String tmp = null;
 		if (usage.equals("country")) {
@@ -187,7 +279,7 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		String s1 = usage.substring(0, 1).toUpperCase() + usage.substring(1);
 		final String capitalized = s1;
 
-		greetingService.getTableData("SELECT " + use + " FROM movies1", new AsyncCallback<ArrayList<String>>() {
+		greetingService.getTableData("SELECT " + use + " FROM moviesnew", new AsyncCallback<ArrayList<String>>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				Window.alert(caught.getMessage());
@@ -219,19 +311,20 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 				Collections.sort(result);
 				// exchange again since db is different. otherwise use original
 				// word provided
-				if (capitalized.equals("Origin")) {
-					list.addItem("Choose Country");
-				} else {
-					list.addItem("Choose " + capitalized);
-				}
 				// populate list
-				for (int i = 0; i < result.size(); i++) {
-					list.addItem(result.get(i));
+				for (int i = 19; i < result.size(); i++) {
+					String tmp = result.get(i);
+					if (!(tmp.equals(" ")) || tmp.isEmpty()) {
+						list.addItem(result.get(i));
+					}
 				}
 			}
 		});
 	}
 	
+	/**
+	 * Sets the filter.
+	 */
 	private void setFilter() {
 		//set Language
 		if(!languageSelection.isItemSelected(0)) {
@@ -271,6 +364,9 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		}
 	}
 
+	/**
+	 * Query database.
+	 */
 	private void queryDatabase() {
 		greetingService.getTableData(filter.generateQuery(), new AsyncCallback<ArrayList <String>>()
 		{
@@ -287,6 +383,11 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		});
 	}
 
+	/**
+	 * Fill table.
+	 *
+	 * @param data the data
+	 */
 	private void fillTable(ArrayList<String> data) {
 		if (!(data != null))
 			return;
@@ -297,16 +398,41 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		for (int i = 0; i < ((data.size() - 1) / columnsCount); i++) {
 			for (int c = 0; c < columnsCount; c++) {
 				dataTable.setText(i, c, data.get(entry));
-				if (c == 5 && data.get(entry) != "" && data.get(entry) != "origin") {
-					// Fill the array with all entries from the column "origin"
-					// Leaves out blank entries and the first entry "origin"
-					countriesFromDB.add(data.get(entry));
-				}
-				entry++;
+			//set name/CSS identifier	
+			if (i%2==0 && i!=0){	
+				dataTable.getCellFormatter().addStyleName(i, c, "cellsAlt");
 			}
+			else if (i%2==1 && i!=0){
+				dataTable.getCellFormatter().addStyleName(i, c, "cells");
+			}
+			if (i==0){
+				dataTable.getCellFormatter().addStyleName(i, c, "cellsHeader");
+			
+			}
+			
+			
+			
+			if (c == 5 && data.get(entry) != "" && data.get(entry) != "origin") {
+				// Fill the array with all entries from the column "origin"
+				// Leaves out blank entries and the first entry "origin"
+				countriesFromDB.add(data.get(entry));
+			}
+			entry++;
+		}
+		//Overwrite Titels for DB
+		dataTable.setText(0, 0, "ID");
+		dataTable.setText(0, 1, "Title");
+		dataTable.setText(0, 2, "Year");
+		dataTable.setText(0, 3, "Length");
+		dataTable.setText(0, 4, "Language");
+		dataTable.setText(0, 5, "Origin");
+		dataTable.setText(0, 6, "Genre");
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.client.SliderListener#onChange(com.client.SliderEvent)
+	 */
 	@Override
     public void onChange(SliderEvent e)
     {
@@ -314,8 +440,11 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
     }
 
 	/**
-     * Update the rangeSliderLabel when the rangeSlider is moved
-     */
+	 * Update the rangeSliderLabel when the rangeSlider is moved.
+	 *
+	 * @param e the e
+	 * @return true, if successful
+	 */
     @Override
     public boolean onSlide(SliderEvent e)
     {
@@ -332,18 +461,30 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see com.client.SliderListener#onStart(com.client.SliderEvent)
+     */
     @Override
     public void onStart(SliderEvent e)
     {
         // We are not going to do anything onStart 
     }
 
+    /* (non-Javadoc)
+     * @see com.client.SliderListener#onStop(com.client.SliderEvent)
+     */
     @Override
     public void onStop(SliderEvent e)
     {
         // We are not going to do anything onStop        
     }
     
+ /**
+  * To js array string.
+  *
+  * @param input the input
+  * @return the js array string
+  */
  // Convert an ArrayList<String> to a JavaScript-Array that holds Strings
     public static JsArrayString toJsArrayString(ArrayList<String> input) {
         JsArrayString jsArrayString = JsArrayString.createArray().cast();
@@ -352,6 +493,13 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
         }
         return jsArrayString; 
     }
+    
+    /**
+     * To js array int.
+     *
+     * @param input the input
+     * @return the js array integer
+     */
     // Convert an ArrayList<Integer> to a JavaScript-Array that holds Integer
     public static JsArrayInteger toJsArrayInt(ArrayList<Integer> input) {
         JsArrayInteger jsArrayInteger = JsArrayInteger.createArray().cast();
@@ -362,6 +510,9 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
     }
     
 	
+    /**
+     * Sets the movie count per country.
+     */
     private void setMovieCountPerCountry() {
 		
 		// One occurrence of a country
@@ -417,6 +568,9 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
 		
 	}
 
+    /**
+     * Publish variables.
+     */
     // JSNI-method
     private native void publishVariables() /*-{
     	// Creates following variables which can be used by JavaScript
@@ -424,12 +578,18 @@ private final GreetingServiceAsync greetingService = GWT.create(GreetingService.
       	$wnd.moviesPerCountry = this.@com.client.MovieMap::moviesPerCountryJS;
     }-*/;
     
+    /**
+     * Load map data.
+     */
     // JSNI-method
     private native void loadMapData() /*-{
     	// Creates following function which can be used by JavaScript
     	$wnd.onGwtReady();
   	}-*/;  
     
+    /**
+     * Update geo chart.
+     */
     private void updateGeoChart() {
     	// Fill up the arrays "countries" and "moviesPerCountry" with the DB-data
     	setMovieCountPerCountry();

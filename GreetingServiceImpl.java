@@ -10,14 +10,22 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import com.google.appengine.api.rdbms.AppEngineDriver;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+// TODO: Auto-generated Javadoc
 /**
  * The server-side implementation of the RPC service.
  */
 @SuppressWarnings("serial")
 public class GreetingServiceImpl extends RemoteServiceServlet implements GreetingService {
 	
+    /**
+     * Execute query.
+     *
+     * @param query the query
+     * @return the array list
+     */
     private ArrayList <String> executeQuery(String query) {
     ArrayList <String> queryResult = new ArrayList <String> ();
 
@@ -28,18 +36,16 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 				
         try
         {
-            Class.forName("com.mysql.jdbc.Driver");
-            //Class.forName("com.mysql.jdbc.GoogleDriver");
+            DriverManager.registerDriver(new AppEngineDriver());
         }
-        catch (ClassNotFoundException e)
+        catch (SQLException e)
         {
             // TODO Auto-generated catch block
         }
 				
         try
-        {
-            //connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test2?user=root");
-            connection = DriverManager.getConnection("jdbc:mysql://62.203.130.55:8088/moviemaptest", "SEUser", "SE2015DB");
+        { 
+        	connection = DriverManager.getConnection("jdbc:google:rdbms://moviemapgroup01:movies/moviedb?user=root");
         }
         catch (SQLException e)
         {
@@ -72,7 +78,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
         
         try
         {
-            rsmd = resultSet.getMetaData();
+        	rsmd = resultSet.getMetaData();
         }
         catch (SQLException e)
         {
@@ -86,6 +92,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
         catch (SQLException e)
         {
             // TODO Auto-generated catch block
+        	e.printStackTrace();
         }
         
         try
@@ -118,6 +125,9 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
         return queryResult;
     }
 	
+	/* (non-Javadoc)
+	 * @see com.client.GreetingService#getTableData(java.lang.String)
+	 */
 	public ArrayList<String> getTableData(String query) {
 		return executeQuery(query);
 	}
